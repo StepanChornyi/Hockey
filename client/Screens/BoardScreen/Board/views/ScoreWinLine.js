@@ -119,24 +119,4 @@ export default class ScoreWinLine extends DisplayObject {
     //   ease: (t) => Ease.cubicIn(Ease.backOut(t))
     // }));
   }
-
-  static getConfig(MAX_SCORE) {
-    const LINE_WIDTH = 2;
-    const ARC_RADIUS = GATES_SIZE * 0.5;
-    const ARC_SIZE = Math.PI * ARC_RADIUS;
-    const DASH_OFFSET = 5;
-    const DASH_SIZE = (ARC_SIZE - DASH_OFFSET * MAX_SCORE) / MAX_SCORE;
-    const DASH_ANGLE_SIZE = DASH_SIZE / ARC_RADIUS;
-    const DASH_OFFSET_ANGLE_SIZE = Math.asin(DASH_OFFSET / ARC_RADIUS);
-
-    return {
-      LINE_WIDTH,
-      ARC_RADIUS,
-      ARC_SIZE,
-      DASH_OFFSET,
-      DASH_SIZE,
-      DASH_ANGLE_SIZE,
-      DASH_OFFSET_ANGLE_SIZE,
-    }
-  }
 }

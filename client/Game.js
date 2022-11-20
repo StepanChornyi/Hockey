@@ -135,7 +135,6 @@ export default class Game extends GameObject {
         this._showScreen(mainMenuScreen);
         break;
       case S_SYNC:
-        console.log("ASDASD");
         GameModel.timeDelay = Date.now() - data.now;
         break;
     }

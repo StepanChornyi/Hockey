@@ -133,12 +133,14 @@ export default class ScoreView extends DisplayObject {
     const DASH_ANGLE_SIZE = DASH_SIZE / ARC_RADIUS;
     const DASH_OFFSET_ANGLE_SIZE = Math.asin(DASH_OFFSET / ARC_RADIUS);
 
+    const RENDER_SCALE = Black.engine.mVideo.renderScaleFactor;
+
     return {
       LINE_WIDTH,
       ARC_RADIUS,
       ARC_SIZE,
-      DASH_OFFSET,
-      DASH_SIZE,
+      DASH_OFFSET: DASH_OFFSET * RENDER_SCALE,
+      DASH_SIZE: DASH_SIZE * RENDER_SCALE,
       DASH_ANGLE_SIZE,
       DASH_OFFSET_ANGLE_SIZE,
     }
