@@ -141,6 +141,9 @@ class ServerController {
     clb[C_SWITCH_HOST_PLAYER] = (data) => {
       const match = model.getMatchById(data.matchId);
 
+      if (!match)
+        return;
+
       match.hostPlayerIndex = (data.playerIndex + 1) % 2;
 
       data = match.toDataJS();
