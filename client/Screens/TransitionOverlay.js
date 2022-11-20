@@ -29,6 +29,7 @@ export default class TransitionOverlay extends DisplayObject {
       }))
     })
 
+    // Black.audio.play("transition", "master", 1);
   }
 
   _resizeOverlay() {

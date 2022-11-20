@@ -35,7 +35,10 @@ export default class Button extends FixedSizeDisplayObject {
     bg.on("pointerIn", () => this._drawBg(buttonStyle, 0.12));
     bg.on("pointerOut", () => this._drawBg({ bgStroke: buttonStyle.bgStroke }, 0.3));
 
-    this.on("pointerDown", () => this.post("pressed"));
+    this.on("pointerDown", () => {
+      Black.audio.play("click", "master", 0.5);
+      this.post("pressed");
+    });
   }
 
   _drawBg({ bgColor = 0x000000, bgStroke }, bgAlpha = 0) {

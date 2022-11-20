@@ -1,4 +1,4 @@
-import { MessageDispatcher } from "black-engine";
+import { Black, MessageDispatcher } from "black-engine";
 
 import GameModel from "./GameModel";
 
@@ -151,6 +151,7 @@ class InputPopup extends MessageDispatcher {
 
     btnClose = document.getElementById("closeBtn");
     btnClose && btnClose.addEventListener("click", this.hide.bind(this));
+    btnClose && btnClose.addEventListener("click", () => Black.audio.play("click", "master", 0.5));
 
     return document.getElementById("enterBtn");
   }

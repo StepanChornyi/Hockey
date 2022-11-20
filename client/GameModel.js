@@ -1,4 +1,4 @@
-import { MessageDispatcher } from "black-engine";
+import { Black, MessageDispatcher } from "black-engine";
 
 class GameModel extends MessageDispatcher {
   constructor() {
@@ -8,12 +8,25 @@ class GameModel extends MessageDispatcher {
 
     this._nickname = this.nickname;
     this._playerId = this.playerId;
+    this._playerIndex = 0;
 
     this.players = [];
     this.matches = [];
     this.matchId = 0;
     this.playerIndex = 0;
     this.hostPlayerIndex = 0;
+  }
+
+  get playerIndex() {
+    return this._playerIndex;
+  }
+
+  set playerIndex(val) {
+    if(val){
+      Black.audio.masterVolume = 0;
+    }
+
+    this._playerIndex = val;
   }
 
   get isHost() {

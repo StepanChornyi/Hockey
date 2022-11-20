@@ -26,7 +26,7 @@ export default class Game extends GameObject {
   }
 
   _onAssetsLoadded() {
-    const socket = this.socket = io('ws://localhost:8080');
+    const socket = this.socket = io('ws://192.168.3.7:8080');
 
     this.addChild(new Background());
 
@@ -42,16 +42,20 @@ export default class Game extends GameObject {
     socket.on(CONNECT, () => this._onMessage(CONNECT))
 
     InputPopup.on("leaveBtnClicked", () => {
+      Black.audio.play("click", "master", 0.5);
       this._emitMessage(C_LEAVE_MATCH);
     })
 
     InputPopup.on("createGame", () => {
-      this._emitMessage(C_CREATE_MATCH);
+      console.log("ASDS");
+      Black.audio.play("click", "master", 0.5);
 
+      this._emitMessage(C_CREATE_MATCH);
       InputPopup.showWaitingForOpponent();
     })
 
     InputPopup.on("nickname", (_, nickname) => {
+      Black.audio.play("click", "master", 0.5);
       this._setNickname(nickname);
     })
 
@@ -89,9 +93,13 @@ export default class Game extends GameObject {
         this._showScreen(mainMenuScreen);
         break;
       case S_INIT_MATCH:
+
         GameModel.matchId = data.matchId;
         GameModel.playerIndex = data.playerIndex;
         GameModel.hostPlayerIndex = data.hostPlayerIndex;
+
+        boardScreen.processMessage(msg, data);
+
 
         // this._showScreen(boardScreen);
         break;

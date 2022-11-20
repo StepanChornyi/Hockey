@@ -18,7 +18,7 @@ export default class Board extends FixedSizeDisplayObject {
 
     this.touchable = true;
 
-    const boardMarkings = new BoardMarkings();
+    const boardMarkings =this._boardMarkings =  new BoardMarkings();
 
     const playerAView = this._playerAView = new PlayerView({
       color: 0xeb3446,
@@ -91,6 +91,10 @@ export default class Board extends FixedSizeDisplayObject {
   setMaxScore(maxScore) {
     this._scoreViewA.setMaxScore(maxScore);
     this._scoreViewB.setMaxScore(maxScore);
+  }
+
+  setCenterColor(isHost){
+    this._boardMarkings.setCenterColor(isHost ? 0xf57842 : 0x4298f5);
   }
 
   hideDynamicObjects() {
@@ -244,7 +248,6 @@ export default class Board extends FixedSizeDisplayObject {
     this._inputA.touchable = true;
     this._inputB.touchable = false;
     console.log("initAsPlayerA");
-
   }
 
   initAsPlayerB() {

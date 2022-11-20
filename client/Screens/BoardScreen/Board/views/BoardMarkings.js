@@ -5,15 +5,27 @@ export default class BoardMarkings extends Graphics {
   constructor() {
     super();
 
+    this._draw();
+  }
+
+  setCenterColor(centerColor) {
+    this._draw(centerColor);
+  }
+
+  _draw(centerColor = 0xffffff) {
     const r = GATES_SIZE * 0.5;
     const angleOffset = Math.PI * 0.03;
 
-    this.lineStyle(2, 0xffffff, 0.3, CapsStyle.ROUND);
+    this.clear();
+
+    this.lineStyle(2, centerColor, 0.3, CapsStyle.ROUND);
 
     this.beginPath();
     this.circle(BOARD_WIDTH * 0.5, BOARD_HEIGHT * 0.5, r);
     this.closePath();
     this.stroke();
+
+    this.lineStyle(2, 0xffffff, 0.3, CapsStyle.ROUND);
 
     this.beginPath();
     this.moveTo(6, BOARD_HEIGHT * 0.5);

@@ -12,7 +12,8 @@ import goalWinSound from 'assets/audio/goal_win.mp3';
 import goalLoseSound from 'assets/audio/goal_lose.mp3';
 import winSound from 'assets/audio/win.mp3';
 import loseSound from 'assets/audio/lose.mp3';
-
+import transition from 'assets/audio/transition.mp3';
+import click from 'assets/audio/click.mp3';
 
 export default function loadAssets(clb) {
   const assets = new AssetManager();
@@ -29,6 +30,8 @@ export default function loadAssets(clb) {
   assets.enqueueSound("goalLose", goalLoseSound);
   assets.enqueueSound("win", winSound);
   assets.enqueueSound("lose", loseSound);
+  assets.enqueueSound("transition", transition);
+  assets.enqueueSound("click", click);
 
   assets.on('complete', () => {
     if (document.getElementById("preloaderSpinner")) {

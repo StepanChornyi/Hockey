@@ -48,11 +48,14 @@ export default class MultiplayerController extends Component {
         }
         break;
       case S_INIT_MATCH:
+        GameModel.playerIndex = data.playerIndex;
+
         if (GameModel.playerIndex) {
           board.initAsPlayerA()
         } else {
           board.initAsPlayerB()
         }
+
         break;
       case S_GOAL:
         board.showGoal(!!data.goalPlayerIndex, data.goalPlayerIndex !== GameModel.playerIndex);
@@ -179,6 +182,9 @@ export default class MultiplayerController extends Component {
 
     board.setData(data);
 
+    board.setCenterColor(GameModel.isHost)
+
+
     if (boardSim.isPaused)
       return;
 
@@ -200,11 +206,11 @@ export default class MultiplayerController extends Component {
 
     this.post('~server', C_MATCH_DATA, data)
 
-    const sign = GameModel.playerIndex ? -1 : 1;
+    // const sign = GameModel.playerIndex ? -1 : 1;
 
-    if ((BOARD_CENTER.y - boardSim.ball.y - BALL_RADIUS) * sign < 0) {
-      this.post('~server', C_SWITCH_HOST_PLAYER, { matchId: GameModel.matchId, playerIndex: GameModel.playerIndex });
-    }
+    // if ((BOARD_CENTER.y - boardSim.ball.y - BALL_RADIUS) * sign < 0) {
+    //   this.post('~server', C_SWITCH_HOST_PLAYER, { matchId: GameModel.matchId, playerIndex: GameModel.playerIndex });
+    // }
 
     //   this.on('render', () => {
     //     this.post('~server', C_PLAYER_POS, JSON.stringify(board.inputB))
