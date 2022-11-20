@@ -61,29 +61,18 @@ export default class WinLoseAnimation extends DisplayObject {
       alpha: 1,
     }, 0.2));
 
-    // particlesEffect.play(0.5);
-
-    // particlesEffect.addComponent(new Timer(0.5))
-    //   .on("complete", () => particlesEffect.play(1))
-
     loseText.addComponent(new Tween({
       glowAlpha: 1,
     }, 1, { delay: 0.5 }));
 
     loseText.addComponent(new Timer(2))
-      .on("complete", () => {
-        // loseText.addComponent(new Tween({
-        //   scale: 2,
-        // }, 0.3, {
-        //   ease: Ease.backIn
-        // }));
-
-        // loseText.addComponent(new Tween({
-        //   alpha: 0,
-        // }, 0.2, { delay: 0.1 }));
-      })
 
     Black.audio.play("lose", "master", 1);
+  }
+
+  hide(){
+    this._loseText.alpha = 0;
+    this._winText.alpha = 0;
   }
 }
 

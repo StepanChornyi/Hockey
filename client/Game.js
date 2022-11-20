@@ -8,7 +8,7 @@ import InputPopup from './InputPopup';
 import BoardScreen from './Screens/BoardScreen/BoardScreen';
 import MainMenuScreen from './Screens/MainMenuScreen/MainMenuScreen';
 
-import { CONNECT, C_CREATE_MATCH, S_PLAYER_NAME, C_LEAVE_MATCH, S_OPPONENT_CONNECTED, S_OPPONENT_LEAVED, C_RENAME, C_LOGIN, S_INIT_MATCH, S_LEAVE_MATCH, S_START_MATCH, C_MATCH_DATA, S_MATCH_DATA, C_PLAYER_POS, S_OPPONENT_POS } from '../Protocol.js';
+import { CONNECT, C_CREATE_MATCH, S_PLAYER_NAME, C_LEAVE_MATCH, S_OPPONENT_CONNECTED, S_OPPONENT_LEAVED, C_RENAME, C_LOGIN, S_INIT_MATCH, S_LEAVE_MATCH, S_START_MATCH, C_MATCH_DATA, S_MATCH_DATA, C_PLAYER_POS, S_OPPONENT_POS, S_MATCHES_LIST, S_SYNC } from '../Protocol.js';
 import Background from './Screens/Background/Background';
 import GameModel from './GameModel';
 import TransitionOverlay from './Screens/TransitionOverlay';
@@ -119,6 +119,10 @@ export default class Game extends GameObject {
           this.isLoggedIn = true;
         }
         break;
+      case S_MATCHES_LIST:
+        if (this._activeScreen !== mainMenuScreen)
+          mainMenuScreen.processMessage(msg, data);
+        break;
       case CONNECT:
         InputPopup.hide();
 
@@ -129,6 +133,10 @@ export default class Game extends GameObject {
         }
 
         this._showScreen(mainMenuScreen);
+        break;
+      case S_SYNC:
+        console.log("ASDASD");
+        GameModel.timeDelay = Date.now() - data.now;
         break;
     }
 
@@ -152,9 +160,12 @@ export default class Game extends GameObject {
       this._screensContainer.removeAllChildren();
       this._screensContainer.addChild(screen);
     } else {
-      this._transitionOverlay.showTransition(()=>{
+      this._transitionOverlay.showTransition(() => {
         this._screensContainer.removeAllChildren();
         this._screensContainer.addChild(screen);
+
+        this._activeScreen.post('hide');
+        screen.post('show');
       });
     }
 

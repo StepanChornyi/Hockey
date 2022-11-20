@@ -9,6 +9,7 @@ const Protocol = {
   
   S_GAME_OVER: "S_GAME_OVER",
   S_GOAL: "S_GOAL",
+  S_SYNC: "S_SYNC",
   S_MATCH_DATA: "S_MATCH_DATA",
   S_HOST_PLAYER_CHANGED: "S_HOST_PLAYER_CHANGED",
   

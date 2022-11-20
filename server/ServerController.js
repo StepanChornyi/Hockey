@@ -35,6 +35,7 @@ const {
   C_GOAL,
   S_GOAL,
   S_GAME_OVER,
+  S_SYNC,
 } = require("../Protocol");
 
 class ServerController {
@@ -82,6 +83,7 @@ class ServerController {
       player.name = data.name;
 
       socket.emit(S_PLAYER_NAME, { name: player.name, playerId: player.id });
+      socket.emit(S_SYNC, { now: Date.now() });
 
       this.io.emit(S_PLAYERS_LIST, model.getPlayersListData());
       this.io.emit(S_MATCHES_LIST, model.getMatchesListData());
@@ -160,6 +162,9 @@ class ServerController {
         this.playersEmit(match, S_GAME_OVER, {
           winPlayerIndex: match.winPlayerIndex
         });
+
+        model.removeMatch(match.id);
+        this.io.emit(S_MATCHES_LIST, model.getMatchesListData());
       }
     }
 

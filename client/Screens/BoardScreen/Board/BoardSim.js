@@ -4,6 +4,7 @@ import CircleBody from '../../../CustomPhysics/CircleBody';
 import PhysicsWorld from '../../../CustomPhysics/PhysicsWorld';
 import SegmentBody from '../../../CustomPhysics/SegmentBody';
 import Utils from '../../../Utils';
+import GameModel from '../../../GameModel';
 
 export default class BoardSim extends Component {
   constructor() {
@@ -147,7 +148,7 @@ export default class BoardSim extends Component {
       playerBController: this.playerBController,
 
       collisionData: this.collisionsData,
-      timeStamp: Date.now()
+      timeStamp: now()
     }
   }
 
@@ -159,7 +160,7 @@ export default class BoardSim extends Component {
     this.playerAController.copyFrom(data.playerAController);
     this.playerBController.copyFrom(data.playerBController);
 
-    const dt = (Date.now() - data.timeStamp) * 0.001;
+    const dt = (now() - data.timeStamp) * 0.001;
 
     if (dt > 0)
       this.update(dt, true);
@@ -168,4 +169,8 @@ export default class BoardSim extends Component {
   set isPaused(val) {
     this._isPaused = !!val;
   }
+}
+
+function now() {
+  return Date.now() - GameModel.timeDelay;
 }

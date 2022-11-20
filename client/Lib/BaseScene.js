@@ -21,13 +21,15 @@ export default class BaseScene extends DisplayObject {
   }
 
   _showOverlay(alpha = 0.4) {
-    this._overlay.addComponent(new Tween({
+    this._overlay.alpha = 0;
+
+    return this._overlay.addComponent(new Tween({
       alpha,
     }, 0.4));
   }
 
-  _hideOverlay(delay = 0.2) { 
-    this._overlay.addComponent(new Tween({
+  _hideOverlay(delay = 0.2) {
+    return this._overlay.addComponent(new Tween({
       alpha: 0,
     }, 0.4, { delay }));
   }

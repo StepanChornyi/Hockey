@@ -206,11 +206,11 @@ export default class MultiplayerController extends Component {
 
     this.post('~server', C_MATCH_DATA, data)
 
-    // const sign = GameModel.playerIndex ? -1 : 1;
+    const sign = GameModel.playerIndex ? 1 : -1;
 
-    // if ((BOARD_CENTER.y - boardSim.ball.y - BALL_RADIUS) * sign < 0) {
-    //   this.post('~server', C_SWITCH_HOST_PLAYER, { matchId: GameModel.matchId, playerIndex: GameModel.playerIndex });
-    // }
+    if ((BOARD_CENTER.y - boardSim.ball.y - BALL_RADIUS) * sign < 0) {
+      this.post('~server', C_SWITCH_HOST_PLAYER, { matchId: GameModel.matchId, playerIndex: GameModel.playerIndex });
+    }
 
     //   this.on('render', () => {
     //     this.post('~server', C_PLAYER_POS, JSON.stringify(board.inputB))

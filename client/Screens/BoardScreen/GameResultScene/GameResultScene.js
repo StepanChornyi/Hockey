@@ -1,4 +1,4 @@
-import { Black, Graphics, Emitter, FloatScatter, Modifier, ColorHelper, BlendMode, Timer, MathEx, Vector, Ease, DisplayObject, TextField, CanvasRenderTexture, Sprite, Tween } from 'black-engine';
+import { Black, Graphics, Emitter, FloatScatter, Modifier, ColorHelper, BlendMode, Timer, MathEx, Vector, Ease, DisplayObject, TextField, CanvasRenderTexture, Sprite, Tween, Rectangle } from 'black-engine';
 import BaseScene from '../../../Lib/BaseScene';
 import Button from '../../MainMenuScreen/Button';
 import GlowingButton from './GlowingButton';
@@ -9,6 +9,9 @@ export default class GameResultScene extends BaseScene {
     super();
 
     this.touchable = true;
+
+    this.visible = false;
+    this._resizeBounds = new Rectangle();
 
     const wlAnimContainer = this._wlAnimContainer = new DisplayObject();
     const continueBtnGreen = this._continueBtnGreen = new GlowingButton("Continue", Button.WHITE_GREEN, 250, 80);
@@ -26,6 +29,9 @@ export default class GameResultScene extends BaseScene {
   }
 
   showWin() {
+    this.visible = true;
+    this.onResize(this._resizeBounds);
+
     this._showOverlay();
 
     const wlAnim = this._wlAnim;
@@ -45,6 +51,9 @@ export default class GameResultScene extends BaseScene {
   }
 
   showLose() {
+    this.visible = true;
+    this.onResize(this._resizeBounds);
+
     this._showOverlay();
 
     const wlAnim = this._wlAnim;
@@ -61,6 +70,12 @@ export default class GameResultScene extends BaseScene {
 
         this._showContinueBtn(this._continueBtnRed, 0.5);
       });
+  }
+
+  hide() {
+    this.visible = false;
+    this._wlAnim.hide();
+    this._overlay.alpha = 0;
   }
 
   _showContinueBtn(continueBtn, delay = 0) {
@@ -102,5 +117,7 @@ export default class GameResultScene extends BaseScene {
     continueBtnRed.alignAnchor(0.5);
     continueBtnGreen.x = continueBtnRed.x = bounds.center().x;
     continueBtnGreen.y = continueBtnRed.y = bounds.center().y + 100;
+
+    this._resizeBounds.copyFrom(bounds);
   }
 }

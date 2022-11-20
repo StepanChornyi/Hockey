@@ -15,6 +15,7 @@ class GameModel extends MessageDispatcher {
     this.matchId = 0;
     this.playerIndex = 0;
     this.hostPlayerIndex = 0;
+    this.timeDelay = 0;
   }
 
   get playerIndex() {

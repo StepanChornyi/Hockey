@@ -39,7 +39,10 @@ export default class BoardScreen extends AbstractScreen {
     //   resultScene.showLose()
     // }, 1000);
 
-    resultScene.on("continuePressed", () => this.post("openMainMenu"));
+    resultScene.on("continuePressed", () => {
+      this.once("hide", () => resultScene.hide())
+      this.post("openMainMenu")
+    });
 
     Black.stage.on("resize", this._onResize.bind(this)).callback();
   }
