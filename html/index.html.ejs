@@ -1,0 +1,254 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+
+  <title>Hockey</title>
+  <meta name="author" content="StepanChornyi">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="initial-scale=1 maximum-scale=1 user-scalable=0" />
+
+  <meta property="og:image" content="preview.png" />
+  <meta property="si" content="preview.png" />
+
+  <style>
+    body,
+    html {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      margin: auto;
+      overflow: hidden;
+      display: block;
+      background-color: black;
+      font-family: "Arial";
+    }
+
+    div {
+      display: none;
+      user-select: none;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    #container {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      display: block;
+      /* display:  none; */
+      padding: 0;
+      touch-action: none;
+      user-select: none;
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+      cursor: auto;
+      position: absolute;
+    }
+
+    .popupWrapper {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      position: absolute;
+      color: aliceblue;
+      align-items: center;
+      justify-content: center;
+      flex-direction: row;
+      background-color: #00000088;
+      animation: fadeIn 0.4s cubic-bezier(0.2, 0, 0.05, 1.19) both;
+    }
+
+    .popup {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      max-width: calc(100% - 2rem);
+      width: 30rem;
+      height: 20rem;
+      background-color: rgba(0, 0, 0, 0.534);
+      border: 0.2rem solid #4a3da1;
+      border-radius: 0.5rem;
+      position: absolute;
+      color: aliceblue;
+      margin-bottom: 10rem;
+      animation: popupOpen 0.3s cubic-bezier(.23, 1.28, .61, .99) both;
+    }
+
+    .popupSmall {
+      width: max-content;
+      height: max-content;
+      max-width: 80%;
+      padding: 2rem;
+    }
+
+    .popupTitle {
+      margin-top: 0rem;
+      font-size: 3rem;
+    }
+
+    .popupTitleSmall {
+      margin: 0rem;
+      font-size: 2rem;
+    }
+
+    #popupContainer {
+      display: none;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+
+    #myInput {
+      width: 80%;
+      height: 2rem;
+      font-size: 2rem;
+      border-radius: 0.5rem;
+      background-color: #00000065;
+      border: 0.1rem solid #ffffff;
+      color: #ffffff;
+      caret-color: aliceblue;
+    }
+
+    #myInput::selection {
+      color: #000000;
+      background: aliceblue;
+    }
+
+    #myInput::placeholder {
+      color: rgb(58, 58, 58);
+    }
+
+    .buttonsWrapper {
+      margin-top: 2rem;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .button {
+      margin: 0rem 2rem;
+      min-width: 8rem;
+      height: 3rem;
+      background-color: rgba(0, 0, 0, 0);
+      border: 0.2rem solid #000000;
+      border-radius: 0.5rem;
+      color: #ffffff;
+      font-size: 2rem;
+      cursor: pointer;
+    }
+
+    .buttonGreen {
+      border-color: #3dd964;
+      color: #3dd964;
+    }
+
+    .buttonGreen:hover {
+      background-color: #3dd96423;
+    }
+
+    .buttonRed {
+      border-color: #d93d3d;
+      color: #d93d3d;
+    }
+
+    .buttonRed:hover {
+      background-color: #d93d3d23;
+    }
+
+    .marginTop {
+      margin-top: 2rem;
+    }
+
+    .lds-dual-ring {
+      display: inline-block;
+      width: 60px;
+      height: 60px;
+      margin-top: 2rem;
+    }
+
+    .lds-dual-ring:after {
+      content: " ";
+      display: block;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 6px solid #fff;
+      border-color: #fff transparent #fff transparent;
+      animation: lds-dual-ring 1.2s linear infinite;
+    }
+
+    #preloaderSpinner {
+      position: absolute;
+      display: flex;
+      width: 100%;
+      height: 100%;
+      align-items: center;
+      justify-content: center;
+    }
+
+    @keyframes lds-dual-ring {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes popupOpen {
+      0% {
+        opacity: 0;
+        transform: scaleX(0.8) scaleY(0.6) rotate(0.0001deg);
+      }
+
+      100% {
+        opacity: 1;
+        transform: scaleX(1) scaleY(1) rotate(0.0001deg);
+      }
+    }
+
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+  </style>
+
+</head>
+
+<body style="color: #222222;">
+  <div id="preloaderSpinner">
+    <div class="lds-dual-ring" style="margin: unset;"></div>
+  </div>
+  <div id="container">
+
+  </div>
+  <div id="popupContainer">
+    <!-- <div class="popupWrapper">
+      <div class="popup">
+        <p class="popupTitle">Enter Nickname</p>
+        <input id="myInput" placeholder="nickname">
+        <div class="buttonsWrapper">
+          <button class="button buttonRed" onclick="onCancelClick()">Cancel</button>
+          <button class="button buttonGreen" onclick="onSaveClick()">Save</button>
+        </div>
+      </div>
+    </div> -->
+  </div>
+</body>
+
+</html>

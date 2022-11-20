@@ -1,0 +1,41 @@
+{
+  "players": [
+    {
+      "id": 1,
+      "name": "Stepan"
+    },
+    {
+      "id": 2,
+      "name": "Floka"
+    },
+    {
+      "id": 29,
+      "name": "jenny"
+    },
+    {
+      "id": 65,
+      "name": "KURA"
+    },
+    {
+      "id": 68,
+      "name": "SDD"
+    },
+    {
+      "id": 70,
+      "name": "ASDAD"
+    },
+    {
+      "id": 93,
+      "name": "DD"
+    },
+    {
+      "id": 108,
+      "name": "Peep"
+    },
+    {
+      "id": 141,
+      "name": "Eshkere"
+    }
+  ],
+  "idCounter": 200
+}
