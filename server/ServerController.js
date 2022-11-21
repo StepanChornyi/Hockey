@@ -92,6 +92,20 @@ class ServerController {
 
       logPlayerConnected(player.name);
     }
+    
+    clb[C_RENAME] = (data, socket) => {
+      const player = model.getPlayerById(data.playerId);
+
+      player.name = data.name;
+
+      socket.emit(S_PLAYER_NAME, { name: player.name, playerId: player.id });
+
+      this.io.emit(S_PLAYERS_LIST, model.getPlayersListData());
+
+      model.save();
+
+      logPlayerRenamed(player.name, data.name);
+    }
 
     clb[C_CREATE_MATCH] = (data, socket) => {
       const match = model.createMatch();
