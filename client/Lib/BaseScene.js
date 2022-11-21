@@ -1,4 +1,5 @@
 import { Black, Graphics, DisplayObject, Tween } from 'black-engine';
+import Utils from '../Utils';
 
 export default class BaseScene extends DisplayObject {
   constructor() {
@@ -21,7 +22,7 @@ export default class BaseScene extends DisplayObject {
   }
 
   _showOverlay(alpha = 0.4) {
-    this._overlay.alpha = 0;
+    Utils.removeAllTweens(this._overlay);
 
     return this._overlay.addComponent(new Tween({
       alpha,
@@ -29,6 +30,8 @@ export default class BaseScene extends DisplayObject {
   }
 
   _hideOverlay(delay = 0.2) {
+    Utils.removeAllTweens(this._overlay);
+    
     return this._overlay.addComponent(new Tween({
       alpha: 0,
     }, 0.4, { delay }));

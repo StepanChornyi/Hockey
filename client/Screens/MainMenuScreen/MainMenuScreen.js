@@ -48,7 +48,8 @@ export default class MainMenuScreen extends AbstractScreen {
     playerNickname.isButton = true;
     playerNickname.on("pointerDown", () => InputPopup.showEnterNicknamePopup());
 
-    btnNewGame.on("pressed", () => InputPopup.showNewGamePopup());
+    // btnNewGame.on("pressed", () => InputPopup.showNewGamePopup());
+    btnNewGame.on("pressed", () => this.post("createGame"));
 
     Black.stage.on("resize", this._alignElements.bind(this)).callback();
   }

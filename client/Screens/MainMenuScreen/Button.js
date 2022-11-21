@@ -60,6 +60,13 @@ export default class Button extends FixedSizeDisplayObject {
   }
 }
 
+Button.RED = {
+  bgColor: 0xd93d3d,
+  bgStroke: 0xd93d3d,
+  lineWidth: 2,
+  textFill: 0xd93d3d,
+};
+
 Button.BLUE = {
   bgColor: 0x3da2d9,
   bgStroke: 0x3da2d9,

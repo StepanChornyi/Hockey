@@ -12,6 +12,7 @@ import { CONNECT, C_CREATE_MATCH, S_PLAYER_NAME, C_LEAVE_MATCH, S_OPPONENT_CONNE
 import Background from './Screens/Background/Background';
 import GameModel from './GameModel';
 import TransitionOverlay from './Screens/TransitionOverlay';
+import PopupManager from './Screens/PopupManager/PopupManager';
 
 export default class Game extends GameObject {
   constructor() {
@@ -36,6 +37,7 @@ export default class Game extends GameObject {
     this._boardScreen = new BoardScreen(socket, this._emitMessage.bind(this));
     this._mainMenuScreen = new MainMenuScreen(socket, this._emitMessage.bind(this));
     this._transitionOverlay = this.addChild(new TransitionOverlay());
+    this._popupManager = this.addChild(new PopupManager());
 
     socket.onAny(this._onMessage.bind(this));
 
@@ -46,13 +48,26 @@ export default class Game extends GameObject {
       this._emitMessage(C_LEAVE_MATCH);
     })
 
-    InputPopup.on("createGame", () => {
-      console.log("ASDS");
-      Black.audio.play("click", "master", 0.5);
 
+    this._popupManager.on("createGame", () => {
+      this._popupManager.showPopup(PopupManager.WaitingOpponentPopup);
       this._emitMessage(C_CREATE_MATCH);
-      InputPopup.showWaitingForOpponent();
+      // InputPopup.showWaitingForOpponent();
     })
+
+    this._popupManager.on("cancelGame", () => {
+      this._emitMessage(C_LEAVE_MATCH);
+      this._popupManager.hide();
+    })
+
+    
+
+    // InputPopup.on("createGame", () => {
+    //   Black.audio.play("click", "master", 0.5);
+
+    //   this._emitMessage(C_CREATE_MATCH);
+    //   InputPopup.showWaitingForOpponent();
+    // })
 
     InputPopup.on("nickname", (_, nickname) => {
       Black.audio.play("click", "master", 0.5);
@@ -61,6 +76,10 @@ export default class Game extends GameObject {
 
     this._boardScreen.on("openMainMenu", () => {
       this._showScreen(this._mainMenuScreen);
+    })
+
+    this._mainMenuScreen.on("createGame", () => {
+      this._popupManager.showPopup(PopupManager.CreateGamePopup);
     })
 
     // this._showScreen(this._boardScreen);
@@ -86,7 +105,7 @@ export default class Game extends GameObject {
 
     switch (msg) {
       case S_OPPONENT_CONNECTED:
-        InputPopup.hide();
+        this._popupManager.hide();
         // this._showScreen(boardScreen);
         break;
       case S_OPPONENT_LEAVED:
@@ -105,7 +124,7 @@ export default class Game extends GameObject {
         break;
       case S_START_MATCH:
         this._showScreen(boardScreen);
-        InputPopup.hide();
+        this._popupManager.hide();
         break;
       case S_LEAVE_MATCH:
         this._showScreen(mainMenuScreen);
