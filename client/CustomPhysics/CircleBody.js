@@ -65,6 +65,10 @@ export default class CircleBody {
     return this.position.distance(circle) < (this.radius + circle.radius);
   }
 
+  stopMove() {
+    this.vx = this.vy = 0;
+  }
+
   get x() {
     return this.position.x;
   }

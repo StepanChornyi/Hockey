@@ -111,12 +111,11 @@ export default class ScoreWinLine extends DisplayObject {
       playOnAdded: true,
       repeats: 5
     }));
+  }
 
-    // this.addComponent(new Tween({
-    //   score,
-    // }, 0.3, {
-    //   playOnAdded: true,
-    //   ease: (t) => Ease.cubicIn(Ease.backOut(t))
-    // }));
+  hide() {
+    this.visible = false;
+    this.colorT = 0;
+    this._lineWidth = this._config.LINE_WIDTH;
   }
 }

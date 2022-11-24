@@ -35,9 +35,13 @@ export default class Utils {
     for (let i = 0; i < gameObjects.length; i++) {
       const gameObject = gameObjects[i];
 
-      while (gameObject.getComponent(Tween)) {
-        gameObject.removeComponent(gameObject.getComponent(Tween));
-      }
+      Utils.removeAllComponents(gameObject, Tween);
+    }
+  }
+
+  static removeAllComponents(gameObject, componentType) {
+    while (gameObject.getComponent(componentType)) {
+      gameObject.removeComponent(gameObject.getComponent(componentType));
     }
   }
 

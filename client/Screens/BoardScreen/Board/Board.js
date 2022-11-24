@@ -18,7 +18,7 @@ export default class Board extends FixedSizeDisplayObject {
 
     this.touchable = true;
 
-    const boardMarkings =this._boardMarkings =  new BoardMarkings();
+    const boardMarkings = this._boardMarkings = new BoardMarkings();
 
     const playerAView = this._playerAView = new PlayerView({
       color: 0xeb3446,
@@ -72,6 +72,12 @@ export default class Board extends FixedSizeDisplayObject {
     this._handleCollisions(data.collisionData, data.ball, data.playerA, data.playerB);
   }
 
+  resetScores() {
+    this._scoreWinLine.hide();
+    this._scoreViewA.setScore(0, false);
+    this._scoreViewB.setScore(0, false);
+  }
+
   showScoreWin() {
     this._scoreWinLine.show(0x58e83f);
   }
@@ -93,7 +99,7 @@ export default class Board extends FixedSizeDisplayObject {
     this._scoreViewB.setMaxScore(maxScore);
   }
 
-  setCenterColor(isHost){
+  setCenterColor(isHost) {
     this._boardMarkings.setCenterColor(isHost ? 0xf57842 : 0x4298f5);
   }
 

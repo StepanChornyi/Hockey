@@ -60,14 +60,14 @@ export default class Game extends GameObject {
       this._popupManager.hide();
     })
 
-    
+    this._popupManager.on("createSinglePlayerGame", () => {
+      this._popupManager.hide();
 
-    // InputPopup.on("createGame", () => {
-    //   Black.audio.play("click", "master", 0.5);
+      this._boardScreen.processMessage(S_INIT_MATCH, { isLocalBotMatch: true });
+      this._boardScreen.processMessage(S_START_MATCH);
 
-    //   this._emitMessage(C_CREATE_MATCH);
-    //   InputPopup.showWaitingForOpponent();
-    // })
+      this._showScreen(this._boardScreen);
+    })
 
     InputPopup.on("nickname", (_, nickname) => {
       Black.audio.play("click", "master", 0.5);
@@ -118,8 +118,6 @@ export default class Game extends GameObject {
         GameModel.hostPlayerIndex = data.hostPlayerIndex;
 
         boardScreen.processMessage(msg, data);
-
-
         // this._showScreen(boardScreen);
         break;
       case S_START_MATCH:

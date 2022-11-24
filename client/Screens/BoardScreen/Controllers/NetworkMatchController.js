@@ -4,17 +4,13 @@ import InputPopup from "../../../InputPopup";
 import GameModel from "../../../GameModel";
 import { CONNECT, C_MATCH_DATA, C_PLAYER_NAME, C_PLAYER_POS, C_SWITCH_HOST_PLAYER, DISCONNECT, S_HOST_PLAYER_CHANGED, S_GOAL, C_GOAL, S_INIT_MATCH, S_MATCH_DATA, S_OPPONENT_DISCONNECTED, S_OPPONENT_POS, S_PLAYER_NAME, S_START_MATCH, S_GAME_OVER } from "../../../../Protocol";
 import { BALL_RADIUS, BOARD_CENTER } from "../Board/BoardConfig";
+import AbstractMatchController from "./AbstractMatchControler";
 // import BoardSim from "./Board/BoardSim";
 
-export default class MultiplayerController extends Component {
-  constructor(socket, board, boardSim) {
-    super();
+export default class NetworkMatchController extends AbstractMatchController {
+  constructor(board, boardSim) {
+    super(board, boardSim);
 
-    this._socket = socket;
-    this._board = board;
-    this._boardSim = boardSim;
-
-    this.touchable = true;
     this.actAsServer = false;/////////////
     this.lastTimeStamp = -1;
     this.lastData = null;
@@ -129,6 +125,9 @@ export default class MultiplayerController extends Component {
     // this._initSocket();
 
     boardSim.on('goal', (_, isA) => {
+      if (!this.gameObject)
+        return;
+
       if (GameModel.isHost) {
         // board.showGoal(isA);
 
@@ -172,8 +171,6 @@ export default class MultiplayerController extends Component {
     const boardSim = this._boardSim;
     const board = this._board;
 
-    this.post('render');
-
     const data = boardSim.data;
 
     if (GameModel.isHost) {
@@ -211,9 +208,5 @@ export default class MultiplayerController extends Component {
     if ((BOARD_CENTER.y - boardSim.ball.y - BALL_RADIUS) * sign < 0) {
       this.post('~server', C_SWITCH_HOST_PLAYER, { matchId: GameModel.matchId, playerIndex: GameModel.playerIndex });
     }
-
-    //   this.on('render', () => {
-    //     this.post('~server', C_PLAYER_POS, JSON.stringify(board.inputB))
-    //   })
   }
 }

@@ -9,16 +9,15 @@ export default class CountdownScene extends BaseScene {
     this.touchable = true;
 
     this._countdownAnim = this.addChild(new CountdownAnimation());
-    this._overlay.alpha = 0.8;
 
-    setTimeout(() => {
-      this.show();
-    }, 2000);
+    this._overlay.alpha = 0;
   }
 
   show() {
-    this._showOverlay(0.3);
-    this._hideOverlay(3);
+    this._showOverlay(0.5).once("complete", () => {
+      this._hideOverlay(2.5);
+    });
+
     this._countdownAnim.startCountdown();
   }
 

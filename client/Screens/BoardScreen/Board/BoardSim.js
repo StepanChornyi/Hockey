@@ -48,11 +48,25 @@ export default class BoardSim extends Component {
       })
     };
 
+    this.reset();
+  }
+
+  reset() {
+    const playerA = this._playerA;
+    const playerB = this._playerB;
+    const ball = this._ball;
+
+    ball.position.copyFrom(CIRCLES_CONFIG.ball);
+    ball.stopMove();
+
     playerA.position.copyFrom(PLAYER_A_BOX.center());
     playerB.position.copyFrom(PLAYER_B_BOX.center());
 
     this.playerAController.copyFrom(playerA);
     this.playerBController.copyFrom(playerB);
+
+    this._collisionsData = [];
+    console.log("RESETTTTTTTTTTTTTTTTTTTTTTTTTTTT");
   }
 
   update(dt = Black.time.delta, forced = false) {
