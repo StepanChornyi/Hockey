@@ -1,4 +1,4 @@
-import { Black, Graphics, CapsStyle, ColorHelper, GraphicsLinearGradient, Timer, MathEx, Vector, RGB, Rectangle, Tween, Ease } from 'black-engine';
+import { Black, Graphics, CapsStyle, ColorHelper, GraphicsLinearGradient, Timer, MathEx, Vector, RGB, Rectangle, Tween, Ease, MessageDispatcher } from 'black-engine';
 import { BOARD_WIDTH, BOARD_HEIGHT, BALL_RADIUS, BALL_MAX_SPEED, GATES_SIZE, BOARD_CENTER, PLAYER_A_WALLS, PLAYER_B_WALLS } from './BoardConfig';
 import FixedSizeDisplayObject from '../../../Fix/FixedSizeDisplayObject';
 import CollisionEffect from './views/CollisionEffect';
@@ -128,6 +128,21 @@ export default class Board extends FixedSizeDisplayObject {
     }
 
     Black.audio.play(isWin ? 'goalWin' : 'goalLose', "master", 0.5);
+  }
+
+  animateBall() {
+    const ballView = this._ballView;
+    const msg = new MessageDispatcher();
+
+    ballView.alpha = 0;
+    ballView.scale = 2;
+
+    ballView.addComponent(new Tween({ alpha: 1 }, 0.15, { ease: Ease.sinusoidalInOut }))
+      .once('complete', () => msg.post('ready'));
+
+    ballView.addComponent(new Tween({ scale: 1 }, 0.3, { ease: Ease.bounceOut }));
+
+    return msg;
   }
 
   setData(data) {

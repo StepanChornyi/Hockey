@@ -1,4 +1,4 @@
-import { Black, Graphics, Emitter, FloatScatter, Modifier, ColorHelper, BlendMode, Timer, MathEx, Vector, Ease, DisplayObject, TextField, CanvasRenderTexture, Sprite, Tween } from 'black-engine';
+import { Black, Graphics, Emitter, FloatScatter, Modifier, ColorHelper, BlendMode, Timer, MathEx, Vector, Ease, DisplayObject, TextField, CanvasRenderTexture, Sprite, Tween, MessageDispatcher } from 'black-engine';
 import GlowingText from '../../../Lib/GlowingText';
 
 export default class CountdownAnimation extends DisplayObject {
@@ -19,6 +19,7 @@ export default class CountdownAnimation extends DisplayObject {
 
   startCountdown() {
     const numbers = this._numbers;
+    const msg = new MessageDispatcher();
 
     this.visible = true;
 
@@ -45,9 +46,11 @@ export default class CountdownAnimation extends DisplayObject {
 
         number.addComponent(new Tween({
           scale: 3,
-        }, 0.8, { delay: 0.8 }))
+        }, 0.8, { delay: 0.8 })).once("complete", () => msg.post("complete"));
       })
     }
+
+    return msg;
   }
 }
 

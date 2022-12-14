@@ -1,5 +1,5 @@
 import { Black, Graphics, CapsStyle, ColorHelper, GraphicsLinearGradient, Timer, MathEx, GameObject, Vector, Component } from 'black-engine';
-import { BOARD_WIDTH, BOARD_HEIGHT, PLAYER_A_BOX, PLAYER_B_BOX, PLAYER_RADIUS, BALL_RADIUS, WALL_RADIUS, WALL_WIDTH, WALLS_CONFIG, CIRCLES_CONFIG, PLAYER_MAX_SPEED, BALL_MAX_SPEED, BOARD_CENTER } from './BoardConfig';
+import { BOARD_WIDTH, BOARD_HEIGHT, PLAYER_A_BOX, PLAYER_B_BOX, PLAYER_RADIUS, BALL_RADIUS, WALL_RADIUS, WALL_WIDTH, WALLS_CONFIG, CIRCLES_CONFIG, PLAYER_MAX_SPEED, BALL_MAX_SPEED, BOARD_CENTER, PLAYER_A_START, PLAYER_B_START } from './BoardConfig';
 import CircleBody from '../../../CustomPhysics/CircleBody';
 import PhysicsWorld from '../../../CustomPhysics/PhysicsWorld';
 import SegmentBody from '../../../CustomPhysics/SegmentBody';
@@ -59,14 +59,13 @@ export default class BoardSim extends Component {
     ball.position.copyFrom(CIRCLES_CONFIG.ball);
     ball.stopMove();
 
-    playerA.position.copyFrom(PLAYER_A_BOX.center());
-    playerB.position.copyFrom(PLAYER_B_BOX.center());
+    playerA.position.copyFrom(PLAYER_A_START);
+    playerB.position.copyFrom(PLAYER_B_START);
 
     this.playerAController.copyFrom(playerA);
     this.playerBController.copyFrom(playerB);
 
     this._collisionsData = [];
-    console.log("RESETTTTTTTTTTTTTTTTTTTTTTTTTTTT");
   }
 
   update(dt = Black.time.delta, forced = false) {
@@ -98,29 +97,25 @@ export default class BoardSim extends Component {
 
     this._world.update(dt);
 
-    if (!ball.disabled && this._isRoundOver()) {
+    if (!ball.disabled && this._isBallOutOffField()) {
       ball.disabled = true;
 
       this.post('goal', ball.y < BOARD_CENTER.y);
-
-      setTimeout(() => {
-        this.resetBall();
-      }, 1000);
     }
   }
 
-  resetBall() {
+  resetBall(resetPos = BOARD_CENTER) {
     const ball = this.ball;
 
-    ball.x = BOARD_WIDTH * 0.5;
-    ball.y = BOARD_HEIGHT * 0.5;
+    ball.x = resetPos.x;
+    ball.y = resetPos.y
     ball.vx = 0;
     ball.vy = 0;
 
     ball.disabled = false;
   }
 
-  _isRoundOver() {
+  _isBallOutOffField() {
     return Math.abs(BOARD_HEIGHT * 0.5 - this._ball.y) > (BOARD_HEIGHT * 0.5 + BALL_RADIUS * 2);
   }
 

@@ -18,7 +18,7 @@ export default class CountdownScene extends BaseScene {
       this._hideOverlay(2.5);
     });
 
-    this._countdownAnim.startCountdown();
+    return this._countdownAnim.startCountdown();
   }
 
   hide() {

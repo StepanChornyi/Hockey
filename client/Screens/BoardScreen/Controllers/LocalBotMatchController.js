@@ -2,7 +2,7 @@ import { Black, Component, Graphics } from "black-engine";
 
 import InputPopup from "../../../InputPopup";
 import GameModel from "../../../GameModel";
-import { BALL_RADIUS, BOARD_CENTER, PLAYER_A_BOX } from "../Board/BoardConfig";
+import { BALL_A_RESET, BALL_B_RESET, BALL_RADIUS, BOARD_CENTER, GATES_SIZE, PLAYER_A_BOX, PLAYER_A_START, PLAYER_B_BOX, PLAYER_B_START, PLAYER_RADIUS } from "../Board/BoardConfig";
 import AbstractMatchController from "./AbstractMatchControler";
 import { S_START_MATCH } from "../../../../Protocol";
 // import BoardSim from "./Board/BoardSim";
@@ -17,7 +17,7 @@ export default class LocalBotMatchController extends AbstractMatchController {
 
     this._yourScore = 0;
     this._botScore = 0;
-    this._maxScore = 3;
+    this._maxScore = 21;
 
     this._init();
   }
@@ -27,7 +27,15 @@ export default class LocalBotMatchController extends AbstractMatchController {
       GameModel.playerIndex = 0;
 
       this._board.setMaxScore(this._maxScore);
+
       this._boardSim.isPaused = false;
+
+      this.freeze = 1;
+
+      setTimeout(() => {
+        this._lowerFreeze();
+        this._raiseSensitivity();
+      }, 3000);
     }
   }
 
@@ -35,43 +43,7 @@ export default class LocalBotMatchController extends AbstractMatchController {
     const boardSim = this._boardSim;
     const board = this._board;
 
-    boardSim.on('goal', (_, isA) => {
-      if (!this.gameObject)
-        return;
-
-      board.showGoal(isA, !isA);
-
-      if (isA) {
-        this._yourScore++;
-      } else {
-        this._botScore++;
-      }
-
-      board.setAScore(this._botScore);
-      board.setBScore(this._yourScore);
-
-      let isGameOver = false;
-      let isWinner = false;
-
-      if (this._yourScore >= this._maxScore) {
-        isGameOver = true;
-        isWinner = true;
-      } else if (this._botScore >= this._maxScore) {
-        isGameOver = true;
-        isWinner = false;
-      }
-
-      if (isGameOver) {
-        boardSim.isPaused = true;
-
-        setTimeout(() => {
-          isWinner ? board.showScoreWin() : board.showScoreLose();
-          setTimeout(() => {
-            this.post(isWinner ? 'win' : 'lose');
-          }, 250);
-        }, 150);
-      }
-    })
+    boardSim.on('goal', (_, isA) => this._onGoal(isA));
 
     // board.inputA = boardSim.playerA.position;
     board.inputB = boardSim.playerB.position;
@@ -83,6 +55,75 @@ export default class LocalBotMatchController extends AbstractMatchController {
     this.onRender(true);
   }
 
+  _onGoal(isA) {
+    const boardSim = this._boardSim;
+    const board = this._board;
+
+    if (!this.gameObject)
+      return;
+
+    board.showGoal(isA);
+
+    if (isA) {
+      this._yourScore++;
+    } else {
+      this._botScore++;
+    }
+
+    board.setAScore(this._botScore);
+    board.setBScore(this._yourScore);
+
+    const { isGameOver, youWin } = this._checkGameOver();
+
+    !isGameOver && setTimeout(() => {
+      boardSim.resetBall(isA ? BALL_A_RESET : BALL_B_RESET);
+
+      board.animateBall().once("ready", () => {
+        if(isA){
+          this._lowerResetValA()
+          this._raiseSensitivityA();
+        }else{
+          this._lowerResetValB();
+          this._raiseSensitivityB();
+        }
+      });
+    }, 1000);
+
+    if (isA) {
+      this._lowerSensitivityA();
+      this._raiseResetValA();
+    } else {
+      this._lowerSensitivityB(0.2);
+      this._raiseResetValB();
+    }
+
+    if (isGameOver) {
+      boardSim.isPaused = true;
+
+      setTimeout(() => {
+        youWin ? board.showScoreWin() : board.showScoreLose();
+        setTimeout(() => {
+          this.post(youWin ? 'win' : 'lose');
+        }, 250);
+      }, 150);
+    }
+  }
+
+  _checkGameOver() {
+    let isGameOver = false;
+    let youWin = false;
+
+    if (this._yourScore >= this._maxScore) {
+      isGameOver = true;
+      youWin = true;
+    } else if (this._botScore >= this._maxScore) {
+      isGameOver = true;
+      youWin = false;
+    }
+
+    return { isGameOver, youWin };
+  }
+
   onUpdate() {
     const boardSim = this._boardSim;
     const board = this._board;
@@ -90,11 +131,45 @@ export default class LocalBotMatchController extends AbstractMatchController {
     if (boardSim.isPaused)
       return;
 
-    // BOT CONTROL LOGIC
-    boardSim.playerAController.copyFrom(board.inputA);
+    let sensitivityA = this.sensitivityA;
+    let sensitivityB = this.sensitivityB;
+    let resetValB = this.resetValB;
 
-    boardSim.playerBController.copyFrom(board.inputB);
-    // boardSim.playerBController.copyFrom(board.inputB);/////////////
+    if (this.freeze > 0) {
+
+      const freezeRadius = PLAYER_RADIUS * 0.5;
+
+      const inputB = board.inputB;
+      const distB = PLAYER_B_START.distance(inputB);
+      const offset = inputB.clone()
+        .subtract(PLAYER_B_START)
+        .multiplyScalar(distB === 0 ? 0 : 1 / distB);
+
+      offset.multiplyScalar(Math.min(freezeRadius, distB));
+      offset.add(PLAYER_B_START);
+
+      lerpVec2(boardSim.playerBController, offset, 0.2);
+
+      sensitivityB *= (1 - this.freeze);
+      resetValB *= (1 - this.freeze);
+    }
+
+    lerpVec2(boardSim.playerAController, board.inputA, sensitivityA);
+    lerpVec2(boardSim.playerBController, board.inputB, sensitivityB);
+
+    if (resetValB > 0) {
+      boardSim.playerBController.y = Math.min(Math.max(boardSim.playerBController.y, PLAYER_B_BOX.top), PLAYER_B_BOX.bottom)
+
+      const minDist = GATES_SIZE * 0.5 + BALL_RADIUS * 2 + PLAYER_RADIUS;
+      const dist = BOARD_CENTER.distance(boardSim.playerBController);
+
+      if (dist < minDist) {
+        const normal = boardSim.playerBController.clone().subtract(BOARD_CENTER).multiplyScalar(1 / dist);
+        const desiredPos = BOARD_CENTER.clone().add(normal.multiplyScalar(minDist));
+
+        lerpVec2(boardSim.playerBController, desiredPos, resetValB);
+      }
+    }
 
     boardSim.update();
   }
@@ -129,7 +204,7 @@ export default class LocalBotMatchController extends AbstractMatchController {
 
       this._isPrevToDefault = true;
 
-      return this._moveTo(currPos, defaultPos, 0.08);
+      return this._moveBotTo(currPos, defaultPos, 0.08);
     }
 
     if (data.collisionData.length) {
@@ -147,7 +222,7 @@ export default class LocalBotMatchController extends AbstractMatchController {
 
       this._isPrevToDefault = true;
 
-      return this._moveTo(currPos, defaultPos, 0.08);
+      return this._moveBotTo(currPos, defaultPos, 0.08);
     }
 
     const txBoost = Math.abs(Math.sin(Black.time.now * 5)) * 0.05;
@@ -162,13 +237,13 @@ export default class LocalBotMatchController extends AbstractMatchController {
 
     this._isPrevToDefault = false;
 
-    return this._moveTo(currPos, {
+    return this._moveBotTo(currPos, {
       x: ballPos.x + offsetX,
       y: ballPos.y + offsetY,
     }, 0.18 + txBoost, 0.05 + tyBoost);
   }
 
-  _moveTo(currPos, newPos, tx, ty = tx) {
+  _moveBotTo(currPos, newPos, tx, ty = tx) {
     this._board.inputA = {
       x: lerp(currPos.x, newPos.x, tx * this._botMoveInertia),
       y: lerp(currPos.y, newPos.y, ty * this._botMoveInertia),
@@ -185,4 +260,11 @@ const defaultPos = {
 
 function lerp(a, b, t) {
   return a + (b - a) * t;
+}
+
+function lerpVec2(a, b, tx, ty = tx, out = a) {
+  out.x = lerp(a.x, b.x, tx);
+  out.y = lerp(a.y, b.y, ty);
+
+  return out;
 }

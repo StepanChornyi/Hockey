@@ -5,7 +5,7 @@ class MatchModel {
 
     this.players = [];
     this.scores = [0, 0];
-    this.maxScore = 3;
+    this.maxScore = 10;
     this.hostPlayerIndex = 1;
   }
 

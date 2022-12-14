@@ -134,6 +134,9 @@ export default class NetworkMatchController extends AbstractMatchController {
         this.post('~server', C_GOAL, { matchId: GameModel.matchId, goalPlayerIndex: isA ? 1 : 0 });
       }
 
+      setTimeout(() => {
+        boardSim.resetBall();
+      }, 1000);
       // this.post('~server', C_SWITCH_HOST_PLAYER, { matchId: GameModel.matchId });
     })
 
@@ -179,8 +182,7 @@ export default class NetworkMatchController extends AbstractMatchController {
 
     board.setData(data);
 
-    board.setCenterColor(GameModel.isHost)
-
+    // board.setCenterColor(GameModel.isHost) ///for debug purposes
 
     if (boardSim.isPaused)
       return;

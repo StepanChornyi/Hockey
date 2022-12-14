@@ -69,10 +69,13 @@ export default class BoardScreen extends AbstractScreen {
         }
 
         this._boardSim.reset();
+        this._boardSim.isPaused = true;
         this._board.setData(this._boardSim.data);
         this._board.inputA = this._boardSim.playerAController;
         this._board.inputB = this._boardSim.playerBController;
         this._board.resetScores();
+
+
         break;
       case S_START_MATCH:
         this._countdownScene.show();
