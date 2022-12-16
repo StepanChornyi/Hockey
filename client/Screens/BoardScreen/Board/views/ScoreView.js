@@ -68,7 +68,7 @@ export default class ScoreView extends DisplayObject {
     this._view.scaleX *= -1;
 
     this._lineWidthTw = this.addComponent(new Tween({
-      _lineWidth: 4,
+      _lineWidth: 6,
       colorT: 1
     }, 0.15, {
       yoyo: true,

@@ -11,6 +11,7 @@ import GoalEffect from './views/GoalEffect';
 import BallTrail from './views/BallTrail';
 import ScoreView from './views/ScoreView';
 import ScoreWinLine from './views/ScoreWinLine';
+import ScoreTextView from './views/ScoreTextView';
 
 export default class Board extends FixedSizeDisplayObject {
   constructor() {
@@ -44,7 +45,17 @@ export default class Board extends FixedSizeDisplayObject {
     scoreViewA.y = scoreViewB.y = scoreWinLine.y = BOARD_CENTER.y;
     scoreViewA.rotation = MathEx.DEG2RAD * 180;
 
-    this.add(boardMarkings, scoreViewA, scoreViewB, scoreWinLine, ballTrail, goalEffect, wallsView, playerAView, playerBView, ballView);
+    const scoreTextViewA = this._scoreTextViewA = new ScoreTextView(0xeb3446);
+
+    scoreTextViewA.x = BOARD_CENTER.x;
+    scoreTextViewA.y = BOARD_CENTER.y + 50;
+
+    const scoreTextViewB = this._scoreTextViewB = new ScoreTextView(0x58e83f);
+
+    scoreTextViewB.x = BOARD_CENTER.x;
+    scoreTextViewB.y = BOARD_CENTER.y - 50;
+
+    this.add(boardMarkings, scoreViewA, scoreViewB, scoreWinLine, scoreTextViewA, scoreTextViewB, ballTrail, goalEffect, wallsView, playerAView, playerBView, ballView);
 
     this._collisionEffect = this.addChild(new CollisionEffect({
       ballRadius: BALL_RADIUS,
@@ -76,6 +87,8 @@ export default class Board extends FixedSizeDisplayObject {
     this._scoreWinLine.hide();
     this._scoreViewA.setScore(0, false);
     this._scoreViewB.setScore(0, false);
+    this._scoreTextViewA.setScore(0, false);
+    this._scoreTextViewB.setScore(0, false);
   }
 
   showScoreWin() {
@@ -87,11 +100,15 @@ export default class Board extends FixedSizeDisplayObject {
   }
 
   setAScore(score) {
-    this._scoreViewA.setScore(score);
+    // this._scoreViewA.setScore(score);
+    this._scoreTextViewA.setScore(score);
+    this._scoreTextViewB.hightLight();
   }
 
   setBScore(score) {
-    this._scoreViewB.setScore(score);
+    // this._scoreViewB.setScore(score);
+    this._scoreTextViewB.setScore(score);
+    this._scoreTextViewA.hightLight();
   }
 
   setMaxScore(maxScore) {

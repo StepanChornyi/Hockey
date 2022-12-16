@@ -27,10 +27,17 @@ export default class LocalBotMatchController extends AbstractMatchController {
       GameModel.playerIndex = 0;
 
       this._board.setMaxScore(this._maxScore);
+      this._board.resetScores();
 
       this._boardSim.isPaused = false;
+      this._boardSim.resetBall();
 
+      this.sensitivity = 0;
+      this.resetVal = 0;
       this.freeze = 1;
+
+      this._yourScore = 0;
+      this._botScore = 0;
 
       setTimeout(() => {
         this._lowerFreeze();
@@ -79,10 +86,10 @@ export default class LocalBotMatchController extends AbstractMatchController {
       boardSim.resetBall(isA ? BALL_A_RESET : BALL_B_RESET);
 
       board.animateBall().once("ready", () => {
-        if(isA){
+        if (isA) {
           this._lowerResetValA()
           this._raiseSensitivityA();
-        }else{
+        } else {
           this._lowerResetValB();
           this._raiseSensitivityB();
         }

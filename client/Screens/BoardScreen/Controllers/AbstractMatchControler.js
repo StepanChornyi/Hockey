@@ -20,11 +20,11 @@ export default class AbstractMatchController extends Component {
   processMessage(msg, data) { }
 
   onAdded(gameObject) {
-    gameObject.add(this._twObject);
+    gameObject.addChild(this._twObject);
   }
 
   onRemoved(gameObject) {
-    gameObject.remove(this._twObject);
+    gameObject.removeChild(this._twObject);
 
     Utils.removeAllComponents(this._twObject);
 
