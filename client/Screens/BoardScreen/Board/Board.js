@@ -12,7 +12,8 @@ import BallTrail from './views/BallTrail';
 import ScoreView from './views/ScoreView';
 import ScoreWinLine from './views/ScoreWinLine';
 import ScoreTextView from './views/ScoreTextView';
-import ClickEffect from './views/ClickEffect';
+import Utils from '../../../Utils';
+import CollisionCircleEffect from './views/CollisionCircleEffect';
 
 export default class Board extends FixedSizeDisplayObject {
   constructor() {
@@ -64,13 +65,10 @@ export default class Board extends FixedSizeDisplayObject {
       bColor: playerBView.color,
     }));
 
-    const clickEffect = this.addChild(new ClickEffect());
+    this._collisionCircleEffect = this.addChild(new CollisionCircleEffect());
 
     this._inputA = this.addChild(new PlayerInput(new Rectangle(0, 0, BOARD_WIDTH, BOARD_HEIGHT)));
     this._inputB = this.addChild(new PlayerInput(new Rectangle(0, 0, BOARD_WIDTH, BOARD_HEIGHT)));
-
-    this._inputA.on("pointerDown", clickEffect.onClick, clickEffect);
-    this._inputB.on("pointerDown", clickEffect.onClick, clickEffect);
 
     this._maxEffectsPerFrame = 1;
     this._effectsPerFrame = 0;
@@ -219,24 +217,32 @@ export default class Board extends FixedSizeDisplayObject {
   _handleCollision(collisionData, ball, playerA) {
     const collisionEffect = this._collisionEffect;
 
+    const bodyA = collisionData.bodyA.id === ball.id ? collisionData.bodyA : collisionData.bodyB;
     const bodyB = collisionData.bodyA.id === ball.id ? collisionData.bodyB : collisionData.bodyA;
 
-    collisionEffect.showCollision(ball, collisionData, bodyB.id === playerA.id);
+    const ballSpeedVal = MathEx.distance(bodyA.vx, bodyA.vy, 0, 0) / BALL_MAX_SPEED;
+    const effectRadius = Utils.lerp(3, 7, ballSpeedVal)
+
+    collisionEffect.showCollision(bodyA, collisionData, bodyB.id === playerA.id);
 
     if (collisionData.isCircle) {
       const playerView = bodyB.id === playerA.id ? this._playerAView : this._playerBView;
 
       playerView.strokeAlpha = 1;
       playerView.lightT = 1;
-      playerView.hitNormal = new Vector().copyFrom(ball).subtract(bodyB).normalize();
+      playerView.hitNormal = new Vector().copyFrom(bodyA).subtract(bodyB).normalize();
+
+      this._collisionCircleEffect.show(new Vector().copyFrom(playerView.hitNormal).multiplyScalar(-bodyA.r).add(bodyA), effectRadius, playerView.color);
     } else {
-      const collisionPoint = new Vector().copyFrom(collisionData.normal).multiplyScalar(ball.r).add(ball);
+      const collisionPoint = new Vector().copyFrom(collisionData.normal).multiplyScalar(bodyA.r).add(bodyA);
+
+      this._collisionCircleEffect.show(new Vector().copyFrom(collisionData.normal).multiplyScalar(-bodyA.r).add(bodyA), effectRadius);
 
       this._wallsView.showEffect(bodyB.id, collisionPoint);
     }
 
     const volMultiplier = 1.7 / (1 + this._soundCount);
-    const vol = (MathEx.distance(ball.vx, ball.vy, 0, 0) / BALL_MAX_SPEED) * volMultiplier;
+    const vol = ballSpeedVal * volMultiplier;
     const soundName = collisionData.isCircle ? "hit" : "hitWall";
 
     Black.audio.play(soundName, "master", vol).on('complete', () => {

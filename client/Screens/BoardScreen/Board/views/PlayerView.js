@@ -98,4 +98,7 @@ export default class PlayerView extends Graphics {
     }
   }
 
+  get color() {
+    return this._color;
+  }
 }
