@@ -1,15 +1,15 @@
 import { Rectangle, Vector } from 'black-engine';
 
 const BOARD_WIDTH = 400;
-const BOARD_HEIGHT = 600;
+const BOARD_HEIGHT = 700;
 const BOARD_CENTER = new Vector(BOARD_WIDTH * 0.5, BOARD_HEIGHT * 0.5);
-const GATES_SIZE = BOARD_WIDTH * 0.5;
+const GATES_SIZE = BOARD_WIDTH * 0.45;
 const WALL_RADIUS = 4;
 const WALL_WIDTH = WALL_RADIUS * 2;
 const BALL_RADIUS = 15;
-const PLAYER_RADIUS = 40;
+const PLAYER_RADIUS = 35;
 const PLAYER_OFFSET = 0.1;
-const BALL_MAX_SPEED = 1600;
+const BALL_MAX_SPEED = 1300;
 const PLAYER_MAX_SPEED = BALL_MAX_SPEED * 0.95;
 
 const PLAYER_A_BOX = new Rectangle(//top player

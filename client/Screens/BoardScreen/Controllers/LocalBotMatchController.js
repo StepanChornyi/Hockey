@@ -17,7 +17,7 @@ export default class LocalBotMatchController extends AbstractMatchController {
 
     this._yourScore = 0;
     this._botScore = 0;
-    this._maxScore = 21;
+    this._maxScore = 10;
 
     this._init();
   }
@@ -42,7 +42,7 @@ export default class LocalBotMatchController extends AbstractMatchController {
       setTimeout(() => {
         this._lowerFreeze();
         this._raiseSensitivity();
-      }, 3000);
+      }, 4000);
     }
   }
 
@@ -111,8 +111,8 @@ export default class LocalBotMatchController extends AbstractMatchController {
         youWin ? board.showScoreWin() : board.showScoreLose();
         setTimeout(() => {
           this.post(youWin ? 'win' : 'lose');
-        }, 250);
-      }, 150);
+        }, 500);
+      }, 350);
     }
   }
 

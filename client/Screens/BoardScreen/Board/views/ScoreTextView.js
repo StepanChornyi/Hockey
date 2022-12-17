@@ -33,17 +33,17 @@ export default class ScoreTextView extends DisplayObject {
 
     this.addComponent(new Tween({
       alpha: 1,
-    }, 0.3)).once('complete', () => {
+    }, 0.2)).once('complete', () => {
       text.addComponent(new Tween({
         alpha: 1,
         scale: 1.8
-      }, 0.4)).once('complete', () => {
+      }, 0.3)).once('complete', () => {
         this._setScore(score);
 
         text.addComponent(new Tween({
           alpha: 0.3,
           scale: 1
-        }, 0.4, { delay: 0.15 }))
+        }, 0.3, { delay: 0.1 }))
       });
 
       this.addComponent(new Tween({
@@ -55,13 +55,12 @@ export default class ScoreTextView extends DisplayObject {
   hightLight() {
     this.addComponent(new Tween({
       alpha: 1,
-    }, 0.3)).once('complete', () => {
+    }, 0.2)).once('complete', () => {
       this.addComponent(new Tween({
         alpha: 0,
       }, 0.6, { delay: 0.7 }))
     });
   }
-
 
   _setScore(score) {
     this._score = score;
