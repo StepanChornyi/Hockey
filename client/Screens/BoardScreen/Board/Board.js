@@ -12,6 +12,7 @@ import BallTrail from './views/BallTrail';
 import ScoreView from './views/ScoreView';
 import ScoreWinLine from './views/ScoreWinLine';
 import ScoreTextView from './views/ScoreTextView';
+import ClickEffect from './views/ClickEffect';
 
 export default class Board extends FixedSizeDisplayObject {
   constructor() {
@@ -63,8 +64,13 @@ export default class Board extends FixedSizeDisplayObject {
       bColor: playerBView.color,
     }));
 
+    const clickEffect = this.addChild(new ClickEffect());
+
     this._inputA = this.addChild(new PlayerInput(new Rectangle(0, 0, BOARD_WIDTH, BOARD_HEIGHT)));
     this._inputB = this.addChild(new PlayerInput(new Rectangle(0, 0, BOARD_WIDTH, BOARD_HEIGHT)));
+
+    this._inputA.on("pointerDown", clickEffect.onClick, clickEffect);
+    this._inputB.on("pointerDown", clickEffect.onClick, clickEffect);
 
     this._maxEffectsPerFrame = 1;
     this._effectsPerFrame = 0;
