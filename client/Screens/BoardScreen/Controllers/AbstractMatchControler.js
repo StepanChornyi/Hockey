@@ -10,11 +10,10 @@ export default class AbstractMatchController extends Component {
 
     this._tweens = {};
     this._twObject = new GameObject();
+
     this._twObject.freeze = 0;
-    this._twObject.sensitivityA = 0;
-    this._twObject.sensitivityB = 0;
-    this._twObject.resetValA = 0;
-    this._twObject.resetValB = 0;
+    this._twObject.sensitivity = 0;
+    this._twObject.resetVal = 0;
   }
 
   processMessage(msg, data) { }
@@ -31,63 +30,16 @@ export default class AbstractMatchController extends Component {
     this._tweens = {};
   }
 
-  _raiseSensitivity() {
-    this._raiseSensitivityA();
-    this._raiseSensitivityB();
+  changeResetValue(target, dur, initial = null) {
+    this.__animVal("resetVal", { target, dur, initial });
   }
 
-  _lowerSensitivity() {
-    this._lowerSensitivityA();
-    this._lowerSensitivityB();
+  changeFreezeValue(target, dur, initial = null) {
+    this.__animVal("freeze", { target, dur, initial });
   }
 
-  _raiseResetVal() {
-    this._raiseResetValA();
-    this._raiseResetValB();
-  }
-
-  _raiseSensitivityA() {
-    this.__animVal("sensitivityA", RAISE_SENS_CFG);
-  }
-
-  _lowerSensitivityA() {
-    this.__animVal("sensitivityA", LOWER_SENS_CFG);
-  }
-
-  _raiseResetValA() {
-    this.__animVal("resetValA", RAISE_RESET_VAL_CFG);
-  }
-
-  _lowerResetValA() {
-    this.__animVal("resetValA", LOWER_RESET_VAL_CFG);
-  }
-
-  _raiseSensitivityB() {
-    this.__animVal("sensitivityB", RAISE_SENS_CFG);
-  }
-
-  _lowerSensitivityB(target = LOWER_SENS_CFG.target) {
-    const cfg = { ...LOWER_SENS_CFG };
-
-    cfg.target = target;
-
-    this.__animVal("sensitivityB", cfg);
-  }
-
-  _raiseResetValB() {
-    this.__animVal("resetValB", RAISE_RESET_VAL_CFG);
-  }
-
-  _lowerResetValB() {
-    this.__animVal("resetValB", LOWER_RESET_VAL_CFG);
-  }
-
-  _raiseFreeze() {
-    this.__animVal("freeze", RAISE_FREEZE_CFG);
-  }
-
-  _lowerFreeze() {
-    this.__animVal("freeze", LOWER_FREEZE_CFG);
+  changeSensitivityValue(target, dur, initial = null) {
+    this.__animVal("sensitivity", { target, dur, initial });
   }
 
   __animVal(valName, { dur, initial, target }) {
@@ -102,46 +54,20 @@ export default class AbstractMatchController extends Component {
     return this._tweens[valName] = obj.addComponent(new Tween({ [valName]: target }, dur));
   }
 
+  get resetVal() {
+    return this._twObject.resetVal;
+  }
+
   set resetVal(val) {
-    this.resetValA = val;
-    this.resetValB = val;
+    this._twObject.resetVal = val;
+  }
+
+  get sensitivity() {
+    return this._twObject.sensitivity;
   }
 
   set sensitivity(val) {
-    this.sensitivityA = val;
-    this.sensitivityB = val;
-  }
-
-  get resetValA() {
-    return this._twObject.resetValA;
-  }
-
-  set resetValA(val) {
-    this._twObject.resetValA = val;
-  }
-
-  get sensitivityA() {
-    return this._twObject.sensitivityA;
-  }
-
-  set sensitivityA(val) {
-    this._twObject.sensitivityA = val;
-  }
-
-  get resetValB() {
-    return this._twObject.resetValB;
-  }
-
-  set resetValB(val) {
-    this._twObject.resetValB = val;
-  }
-
-  get sensitivityB() {
-    return this._twObject.sensitivityB;
-  }
-
-  set sensitivityB(val) {
-    this._twObject.sensitivityB = val;
+    this._twObject.sensitivity = val;
   }
 
   get freeze() {
@@ -152,39 +78,3 @@ export default class AbstractMatchController extends Component {
     this._twObject.freeze = val;
   }
 }
-
-const RAISE_SENS_CFG = {
-  dur: 0.2,
-  initial: 0,
-  target: 1
-};
-
-const LOWER_SENS_CFG = {
-  dur: 0.9,
-  initial: null,
-  target: 0
-};
-
-const RAISE_RESET_VAL_CFG = {
-  dur: 0.9,
-  initial: 0,
-  target: 1
-};
-
-const LOWER_RESET_VAL_CFG = {
-  dur: 0.2,
-  initial: null,
-  target: 0
-};
-
-const RAISE_FREEZE_CFG = {
-  dur: 0.2,
-  initial: null,
-  target: 1
-};
-
-const LOWER_FREEZE_CFG = {
-  dur: 0.2,
-  initial: null,
-  target: 0
-};

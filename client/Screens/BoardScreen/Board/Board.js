@@ -121,7 +121,7 @@ export default class Board extends FixedSizeDisplayObject {
   }
 
   setCenterColor(isHost) {
-    this._boardMarkings.setCenterColor(isHost ? 0xf57842 : 0x4298f5);
+    this._boardMarkings.setCenterColor(isHost ? 0xf57842 : 0xffffff);
   }
 
   hideDynamicObjects() {
@@ -295,6 +295,9 @@ export default class Board extends FixedSizeDisplayObject {
 
   initAsPlayerA() {
     this.rotation = Math.PI;
+    this._scoreTextViewA.rotation = Math.PI;
+    this._scoreTextViewB.rotation = Math.PI;
+
     this._inputA.touchable = true;
     this._inputB.touchable = false;
     console.log("initAsPlayerA");
@@ -306,6 +309,9 @@ export default class Board extends FixedSizeDisplayObject {
     this.rotation = 0;
     this._inputA.touchable = false;
     this._inputB.touchable = true;
+
+    this._scoreTextViewA.rotation = 0;
+    this._scoreTextViewB.rotation = 0;
   }
 
   _getFixedBounds(outRect) {

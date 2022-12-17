@@ -32,8 +32,8 @@ export default class Background extends DisplayObject {
     const bgOverlay = this._bgOverlay;
 
     bg.alignAnchor();
-    center.copyTo(bg);
-
+    bg.x = center.x;
+    bg.y = center.y;
     bg.scale = 1;
     bg.scale = Math.max(stageBounds.width / bg.width, stageBounds.height / bg.height);
 

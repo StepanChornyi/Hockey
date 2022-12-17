@@ -40,8 +40,8 @@ export default class LocalBotMatchController extends AbstractMatchController {
       this._botScore = 0;
 
       setTimeout(() => {
-        this._lowerFreeze();
-        this._raiseSensitivity();
+        this.changeFreezeValue(0, 0.2)
+        this.changeSensitivityValue(1, 0.2, 0)
       }, 4000);
     }
   }
@@ -86,23 +86,13 @@ export default class LocalBotMatchController extends AbstractMatchController {
       boardSim.resetBall(isA ? BALL_A_RESET : BALL_B_RESET);
 
       board.animateBall().once("ready", () => {
-        if (isA) {
-          this._lowerResetValA()
-          this._raiseSensitivityA();
-        } else {
-          this._lowerResetValB();
-          this._raiseSensitivityB();
-        }
+        this.changeSensitivityValue(1, 0.2)
+        this.changeResetValue(0, 0.2)
       });
     }, 1000);
 
-    if (isA) {
-      this._lowerSensitivityA();
-      this._raiseResetValA();
-    } else {
-      this._lowerSensitivityB(0.2);
-      this._raiseResetValB();
-    }
+    this.changeSensitivityValue(0, 0.9)
+    this.changeResetValue(1, 0.9, 0)
 
     if (isGameOver) {
       boardSim.isPaused = true;
@@ -138,9 +128,8 @@ export default class LocalBotMatchController extends AbstractMatchController {
     if (boardSim.isPaused)
       return;
 
-    let sensitivityA = this.sensitivityA;
-    let sensitivityB = this.sensitivityB;
-    let resetValB = this.resetValB;
+    let sensitivity = this.sensitivity;
+    let resetVal = this.resetVal;
 
     if (this.freeze > 0) {
 
@@ -157,14 +146,14 @@ export default class LocalBotMatchController extends AbstractMatchController {
 
       lerpVec2(boardSim.playerBController, offset, 0.2);
 
-      sensitivityB *= (1 - this.freeze);
-      resetValB *= (1 - this.freeze);
+      sensitivity *= (1 - this.freeze);
+      resetVal *= (1 - this.freeze);
     }
 
-    lerpVec2(boardSim.playerAController, board.inputA, sensitivityA);
-    lerpVec2(boardSim.playerBController, board.inputB, sensitivityB);
+    lerpVec2(boardSim.playerAController, board.inputA, sensitivity);
+    lerpVec2(boardSim.playerBController, board.inputB, sensitivity);
 
-    if (resetValB > 0) {
+    if (resetVal > 0) {
       boardSim.playerBController.y = Math.min(Math.max(boardSim.playerBController.y, PLAYER_B_BOX.top), PLAYER_B_BOX.bottom)
 
       const minDist = GATES_SIZE * 0.5 + BALL_RADIUS * 2 + PLAYER_RADIUS;
@@ -174,7 +163,7 @@ export default class LocalBotMatchController extends AbstractMatchController {
         const normal = boardSim.playerBController.clone().subtract(BOARD_CENTER).multiplyScalar(1 / dist);
         const desiredPos = BOARD_CENTER.clone().add(normal.multiplyScalar(minDist));
 
-        lerpVec2(boardSim.playerBController, desiredPos, resetValB);
+        lerpVec2(boardSim.playerBController, desiredPos, resetVal);
       }
     }
 

@@ -1,9 +1,9 @@
-import { Black, Component, Graphics } from "black-engine";
+import { Black, Component, Graphics, Vector } from "black-engine";
 
 import InputPopup from "../../../InputPopup";
 import GameModel from "../../../GameModel";
 import { CONNECT, C_MATCH_DATA, C_PLAYER_NAME, C_PLAYER_POS, C_SWITCH_HOST_PLAYER, DISCONNECT, S_HOST_PLAYER_CHANGED, S_GOAL, C_GOAL, S_INIT_MATCH, S_MATCH_DATA, S_OPPONENT_DISCONNECTED, S_OPPONENT_POS, S_PLAYER_NAME, S_START_MATCH, S_GAME_OVER } from "../../../../Protocol";
-import { BALL_RADIUS, BOARD_CENTER } from "../Board/BoardConfig";
+import { BALL_A_RESET, BALL_B_RESET, BALL_RADIUS, BOARD_CENTER, PLAYER_A_START, PLAYER_B_START, PLAYER_RADIUS } from "../Board/BoardConfig";
 import AbstractMatchController from "./AbstractMatchControler";
 // import BoardSim from "./Board/BoardSim";
 
@@ -14,6 +14,7 @@ export default class NetworkMatchController extends AbstractMatchController {
     this.actAsServer = false;/////////////
     this.lastTimeStamp = -1;
     this.lastData = null;
+    this.prevInput = new Vector();
 
     this._init();
   }
@@ -52,13 +53,36 @@ export default class NetworkMatchController extends AbstractMatchController {
           board.initAsPlayerB()
         }
 
+        board.setMaxScore(data.maxScore);
+
+        this.sensitivity = 0;
+        this.resetVal = 0;
+        this.freeze = 1;
+
         break;
       case S_GOAL:
         board.showGoal(!!data.goalPlayerIndex, data.goalPlayerIndex !== GameModel.playerIndex);
         board.setAScore(data.scores[0]);
         board.setBScore(data.scores[1]);
-        break;
 
+        if (!data.isGameOver)
+          setTimeout(() => {
+            if (GameModel.isHost) {
+              boardSim.resetBall(!!data.goalPlayerIndex ? BALL_A_RESET : BALL_B_RESET);
+            }
+
+            board.animateBall().once("ready", () => {
+              // if (isA) {
+              //   this._lowerResetValA()
+              //   this._raiseSensitivityA();
+              // } else {
+              //   this._lowerResetValB();
+              //   this._raiseSensitivityB();
+              // }
+            });
+          }, 1000);
+
+        break;
       case S_GAME_OVER:
         boardSim.isPaused = true;
 
@@ -70,26 +94,13 @@ export default class NetworkMatchController extends AbstractMatchController {
             this.post(isWinner ? 'win' : 'lose');
           }, 250);
         }, 150);
-
-      // if (data.winPlayerIndex === GameModel.playerIndex) {
-      //   setTimeout(() => {
-      //     board.showScoreWin()
-      //     setTimeout(() => {
-      //       this.post('win');
-      //     }, 250);
-      //   }, 150);
-      // } else {
-      //   setTimeout(() => {
-      //     board.showScoreLose()
-      //     setTimeout(() => {
-      //       this.post('lose');
-      //     }, 250);
-      //   }, 150);
-      // }
       case S_START_MATCH:
         boardSim.isPaused = false;
 
-        board.setMaxScore(data.maxScore);
+        setTimeout(() => {
+          this.changeFreezeValue(0, 0.2);
+          this.changeSensitivityValue(1, 0.2, 0);
+        }, 4000);
 
         // if (GameModel.playerIndex === 0) {
         //   this.actAsServer = true;
@@ -133,11 +144,6 @@ export default class NetworkMatchController extends AbstractMatchController {
 
         this.post('~server', C_GOAL, { matchId: GameModel.matchId, goalPlayerIndex: isA ? 1 : 0 });
       }
-
-      setTimeout(() => {
-        boardSim.resetBall();
-      }, 1000);
-      // this.post('~server', C_SWITCH_HOST_PLAYER, { matchId: GameModel.matchId });
     })
 
     board.inputA = boardSim.playerA.position;
@@ -157,17 +163,88 @@ export default class NetworkMatchController extends AbstractMatchController {
     if (boardSim.isPaused)
       return;
 
-    if (GameModel.playerIndex) {
-      boardSim.playerAController.copyFrom(board.inputA);
-    } else {
-      boardSim.playerBController.copyFrom(board.inputB);
-      // boardSim.playerBController.copyFrom(board.inputB);/////////////
+
+    let sensitivity = this.sensitivity;
+    let resetValB = this.resetValB;
+
+    if (this.freeze > 0) {
+
+      const input = GameModel.playerIndex ? board.inputA : board.inputB;
+      const startPos = GameModel.playerIndex ? PLAYER_A_START : PLAYER_B_START;
+      const controller = GameModel.playerIndex ? boardSim.playerAController : boardSim.playerBController;
+
+      const freezeRadius = PLAYER_RADIUS * 0.5;
+
+      const dist = startPos.distance(input);
+      const offset = input.clone()
+        .subtract(startPos)
+        .multiplyScalar(dist === 0 ? 0 : 1 / dist);
+
+      offset.multiplyScalar(Math.min(freezeRadius, dist));
+      offset.add(startPos);
+
+      lerpVec2(controller, offset, 0.2);
+
+      sensitivity *= (1 - this.freeze);
     }
 
-    boardSim.update();
+    if (GameModel.playerIndex) {
+      lerpVec2(boardSim.playerAController, board.inputA, sensitivity);
+    } else {
+      lerpVec2(boardSim.playerBController, board.inputB, sensitivity);
+    }
 
-    // board.inputA = boardSim.playerAController;
-    // board.inputB = boardSim.playerBController;
+    // lerpVec2(boardSim.playerAController, board.inputA, sensitivityA);
+    // lerpVec2(boardSim.playerBController, board.inputB, sensitivityB);
+
+    // if (resetValB > 0) {
+    //   boardSim.playerBController.y = Math.min(Math.max(boardSim.playerBController.y, PLAYER_B_BOX.top), PLAYER_B_BOX.bottom)
+
+    //   const minDist = GATES_SIZE * 0.5 + BALL_RADIUS * 2 + PLAYER_RADIUS;
+    //   const dist = BOARD_CENTER.distance(boardSim.playerBController);
+
+    //   if (dist < minDist) {
+    //     const normal = boardSim.playerBController.clone().subtract(BOARD_CENTER).multiplyScalar(1 / dist);
+    //     const desiredPos = BOARD_CENTER.clone().add(normal.multiplyScalar(minDist));
+
+    //     lerpVec2(boardSim.playerBController, desiredPos, resetValB);
+    //   }
+    // }
+
+    boardSim.update();
+  }
+
+  _getSensitivity() {
+    const boardSim = this._boardSim;
+    const board = this._board;
+
+    let sensitivity = this.sensitivity;
+    let resetValB = this.resetValB;
+    let offset = new Vector();
+
+    const input = GameModel.playerIndex ? board.inputA : board.inputB;
+
+    offset.copyFrom(input)
+
+    if (this.freeze > 0) {
+
+      const startPos = GameModel.playerIndex ? PLAYER_A_START : PLAYER_B_START;
+      const controller = GameModel.playerIndex ? boardSim.playerAController : boardSim.playerBController;
+
+      const freezeRadius = PLAYER_RADIUS * 0.5;
+
+      const dist = startPos.distance(input);
+      offset.subtract(startPos)
+        .multiplyScalar(dist === 0 ? 0 : 1 / dist);
+
+      offset.multiplyScalar(Math.min(freezeRadius, dist));
+      offset.add(startPos);
+
+      sensitivity *= (1 - this.freeze);
+      // resetValB *= (1 - this.freeze);
+    }
+
+    return { sensitivity, offset };
   }
 
   onRender(forcedUpdate = false) {
@@ -182,19 +259,26 @@ export default class NetworkMatchController extends AbstractMatchController {
 
     board.setData(data);
 
-    // board.setCenterColor(GameModel.isHost) ///for debug purposes
+    board.setCenterColor(GameModel.isHost) ///for debug purposes
 
     if (boardSim.isPaused)
       return;
 
     if (!GameModel.isHost && !forcedUpdate) {
       if (!GameModel.isHost) {
-        const input = GameModel.playerIndex ? board.inputA : board.inputB;
+        const { offset } = this._getSensitivity();
+
+        const controller = GameModel.playerIndex ? boardSim.playerAController : boardSim.playerBController;
+
+
+        lerpVec2(controller, offset, this.freeze > 0 ? 0.2 : 1);
+
+        // lerpVec2(this.prevInput, input, GameModel.playerIndex ? sensitivityA : sensitivityB);
 
         this.post('~server', C_PLAYER_POS, {
           matchId: GameModel.matchId,
-          x: input.x,
-          y: input.y,
+          x: controller.x,
+          y: controller.y,
         })
       }
 
@@ -211,4 +295,15 @@ export default class NetworkMatchController extends AbstractMatchController {
       this.post('~server', C_SWITCH_HOST_PLAYER, { matchId: GameModel.matchId, playerIndex: GameModel.playerIndex });
     }
   }
+}
+
+function lerp(a, b, t) {
+  return a + (b - a) * t;
+}
+
+function lerpVec2(a, b, tx, ty = tx, out = a) {
+  out.x = lerp(a.x, b.x, tx);
+  out.y = lerp(a.y, b.y, ty);
+
+  return out;
 }

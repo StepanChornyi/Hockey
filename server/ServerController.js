@@ -112,7 +112,7 @@ class ServerController {
 
       match.addPlayer({ id: data.playerId });
 
-      socket.emit(S_INIT_MATCH, { playerIndex: match.players.indexOf(data.playerId), matchId: match.id, hostPlayerIndex: match.hostPlayerIndex });
+      socket.emit(S_INIT_MATCH, { playerIndex: match.players.indexOf(data.playerId), matchId: match.id, hostPlayerIndex: match.hostPlayerIndex, maxScore: match.maxScore });
 
       this.io.emit(S_MATCHES_LIST, model.getMatchesListData());
     }
@@ -132,9 +132,9 @@ class ServerController {
 
       match.addPlayer({ id: data.playerId });
 
-      socket.emit(S_INIT_MATCH, { playerIndex: match.players.indexOf(data.playerId), matchId: match.id, hostPlayerIndex: match.hostPlayerIndex });
+      socket.emit(S_INIT_MATCH, { playerIndex: match.players.indexOf(data.playerId), matchId: match.id, hostPlayerIndex: match.hostPlayerIndex, maxScore: match.maxScore });
 
-      this.playersEmit(match, S_START_MATCH, { maxScore: match.maxScore });
+      this.playersEmit(match, S_START_MATCH);
 
       this.io.emit(S_MATCHES_LIST, model.getMatchesListData());
     }
@@ -172,7 +172,8 @@ class ServerController {
 
       this.playersEmit(match, S_GOAL, {
         goalPlayerIndex: data.goalPlayerIndex,
-        scores: match.scores
+        scores: match.scores,
+        isGameOver: match.isFinished
       });
 
       if (match.isFinished) {

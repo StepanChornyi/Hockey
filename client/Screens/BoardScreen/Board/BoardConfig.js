@@ -1,7 +1,7 @@
 import { Rectangle, Vector } from 'black-engine';
 
 const BOARD_WIDTH = 400;
-const BOARD_HEIGHT = 700;
+const BOARD_HEIGHT = 650;
 const BOARD_CENTER = new Vector(BOARD_WIDTH * 0.5, BOARD_HEIGHT * 0.5);
 const GATES_SIZE = BOARD_WIDTH * 0.45;
 const WALL_RADIUS = 4;
