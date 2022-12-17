@@ -1,4 +1,4 @@
-import { DisplayObject, Black, MathEx, Graphics, GraphicsData, Tween, ColorHelper, CapsStyle, Ease, HSV, TextField, FontStyle } from 'black-engine';
+import { DisplayObject, Black, MathEx, Graphics, GraphicsData, Tween, ColorHelper, CapsStyle, Ease, HSV, TextField, FontStyle, Rectangle } from 'black-engine';
 import Utils from '../../../../Utils';
 
 export default class ScoreTextView extends DisplayObject {
@@ -15,8 +15,6 @@ export default class ScoreTextView extends DisplayObject {
     text.textAlpha = 0.9;
     text.strokeThickness = 1;
     text.strokeColor = strokeColor;
-
-    text.x = -3;
 
     this._score = 0;
   }
@@ -45,7 +43,7 @@ export default class ScoreTextView extends DisplayObject {
         text.addComponent(new Tween({
           alpha: 0.3,
           scale: 1
-        }, 0.4, {delay: 0.15}))
+        }, 0.4, { delay: 0.15 }))
       });
 
       this.addComponent(new Tween({
@@ -64,10 +62,18 @@ export default class ScoreTextView extends DisplayObject {
     });
   }
 
+
   _setScore(score) {
     this._score = score;
 
-    this._text.text = ` ${score}`;
-    this._text.alignAnchor(0.5);
+    this._text.text = `${score}`;
+
+    const width = (this._text.width / this._text.scaleX);
+    const height = (this._text.height / this._text.scaleY);
+
+    this._text.alignAnchor(
+      (width * 0.5 - 4) / width,
+      (height * 0.5 - 5) / height
+    );
   }
 }
