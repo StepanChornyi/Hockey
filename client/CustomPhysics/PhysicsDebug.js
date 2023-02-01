@@ -133,21 +133,6 @@ export default class PhysicsDebug extends DisplayObject {
       g.closePath();
       g.stroke();
     }
-
-
-    // if (circleBody.strokeAlpha) {
-    //   const strokeWidth = lineWidth;
-
-    //   g.lineStyle(strokeWidth, 0xffffff, circleBody.strokeAlpha);
-    //   g.beginPath();
-    //   g.circle(
-    //     circleBody.x,
-    //     circleBody.y,
-    //     circleBody.radius - strokeWidth * 0.5
-    //   );
-    //   g.closePath();
-    //   g.stroke();
-    // }
   }
 
   _drawRectBody(body) {
