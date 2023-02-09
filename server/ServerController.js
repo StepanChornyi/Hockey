@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+
 const {
   S_PLAYER_NAME,
 
@@ -39,7 +41,7 @@ const {
 } = require("../Protocol");
 
 class ServerController {
-  constructor(io, gameModel) {
+  async init(io, gameModel) {
     this._io = io;
     this._gameModel = gameModel;
 
@@ -47,13 +49,12 @@ class ServerController {
 
     const clb = this._initFunctions();
 
-    // io.on(CONNECTION, this.initClient.bind(this));
-    io.on(CONNECTION, (socket) => {
-      const onMsg = (msg, data) => {
+    io.on(CONNECTION, async (socket) => {
+      const onMsg = async (msg, data) => {
         const callback = clb[msg];
 
         if (callback) {
-          callback(JSON.parse(data || "{}"), socket)
+          await callback(JSON.parse(data || "{}"), socket)
         } else {
           console.log(msg);
         }
@@ -61,19 +62,21 @@ class ServerController {
 
 
       socket.onAny(onMsg);
-      socket.on(DISCONNECT, () => onMsg(DISCONNECT));
+      socket.on(DISCONNECT, async () => onMsg(DISCONNECT));
 
 
       // socket.onAny((msg, data) => this.processMessage(msg, JSON.parse(data || "{}"), socket));
       // socket.on(DISCONNECT, () => this.processMessage(DISCONNECT, {}, socket));
     });
+
+    return this;
   }
 
   _initFunctions() {
     const model = this.gameModel;
     const clb = {};
 
-    clb[C_LOGIN] = (data, socket) => {
+    clb[C_LOGIN] = async (data, socket) => {
       const player = model.getPlayerById(data.playerId) || model.createPlayer(socket);
 
       if (data.name == undefined)
@@ -92,8 +95,8 @@ class ServerController {
 
       logPlayerConnected(player.name);
     }
-    
-    clb[C_RENAME] = (data, socket) => {
+
+    clb[C_RENAME] = async (data, socket) => {
       const player = model.getPlayerById(data.playerId);
 
       player.name = data.name;
@@ -107,7 +110,7 @@ class ServerController {
       logPlayerRenamed(player.name, data.name);
     }
 
-    clb[C_CREATE_MATCH] = (data, socket) => {
+    clb[C_CREATE_MATCH] = async (data, socket) => {
       const match = model.createMatch();
 
       match.addPlayer({ id: data.playerId });
@@ -117,7 +120,7 @@ class ServerController {
       this.io.emit(S_MATCHES_LIST, model.getMatchesListData());
     }
 
-    clb[C_LEAVE_MATCH] = (data, socket) => {
+    clb[C_LEAVE_MATCH] = async (data, socket) => {
       const match = model.getMatchByPlayerId(data.playerId);
 
       model.removeMatch(match.id);
@@ -127,7 +130,7 @@ class ServerController {
       this.io.emit(S_MATCHES_LIST, model.getMatchesListData());
     }
 
-    clb[C_JOIN_MATCH] = (data, socket) => {
+    clb[C_JOIN_MATCH] = async (data, socket) => {
       const match = model.getMatchById(data.matchId);
 
       match.addPlayer({ id: data.playerId });
@@ -139,20 +142,20 @@ class ServerController {
       this.io.emit(S_MATCHES_LIST, model.getMatchesListData());
     }
 
-    clb[C_MATCH_DATA] = (data, socket) => {
+    clb[C_MATCH_DATA] = async (data, socket) => {
       const match = model.getMatchById(data.matchId);
 
       this.playersEmit(match, S_MATCH_DATA, data, data.playerId);
 
     }
 
-    clb[C_PLAYER_POS] = (data) => {
+    clb[C_PLAYER_POS] = async (data) => {
       const match = model.getMatchById(data.matchId);
 
       this.playersEmit(match, S_OPPONENT_POS, data, data.playerId);
     }
 
-    clb[C_SWITCH_HOST_PLAYER] = (data) => {
+    clb[C_SWITCH_HOST_PLAYER] = async (data) => {
       const match = model.getMatchById(data.matchId);
 
       if (!match)
@@ -165,7 +168,7 @@ class ServerController {
       this.playersEmit(match, S_HOST_PLAYER_CHANGED, data);
     }
 
-    clb[C_GOAL] = (data) => {
+    clb[C_GOAL] = async (data) => {
       const match = model.getMatchById(data.matchId);
 
       match.scores[data.goalPlayerIndex]++;
@@ -186,7 +189,7 @@ class ServerController {
       }
     }
 
-    clb[DISCONNECT] = (_, socket) => {
+    clb[DISCONNECT] = async (_, socket) => {
       let disconnectedPlayerId = NaN;
 
       for (let i = 0; i < model.players.length; i++) {
@@ -238,7 +241,7 @@ class ServerController {
   }
 
   static init(io, gameModel) {
-    return new ServerController(io, gameModel);
+    return new ServerController().init(io, gameModel);
   }
 }
 

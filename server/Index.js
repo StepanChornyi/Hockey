@@ -1,19 +1,26 @@
 const { Server } = require("socket.io");
 const { DataManager } = require('./DataManager');
 const { ServerController } = require("./ServerController");
+const mongoose = require('mongoose');
 
-const PORT = 8080;
+(async () => {
+  const PORT = 8080;
+  const mongoCredentials = 'mongodb+srv://stepan:4fEK33egL8lcLo6x@hockey.wvoxfpu.mongodb.net/hockey?retryWrites=true&w=majority';
 
-const http = require('http').createServer().listen(PORT, '0.0.0.0');
+  mongoose.set('strictQuery', true);
 
+  await mongoose.connect(mongoCredentials);
 
-const io = new Server( http, {
-  cors: {
-    origin: ["https://localhost:3000", "http://localhost:3000", "http://192.168.3.7:3000"],
-    methods: ["GET", "POST"]
-  }
-});
+  const http = require('http').createServer().listen(PORT, '0.0.0.0');
 
-ServerController.init(io, new DataManager());
+  const io = new Server(http, {
+    cors: {
+      origin: ["https://localhost:3000", "http://localhost:3000", "http://192.168.3.7:3000"],
+      methods: ["GET", "POST"]
+    }
+  });
 
-console.log('\x1b[34m%s\x1b[0m', `======================================= PORT:${PORT}`);
+  ServerController.init(io, new DataManager());
+
+  console.log('\x1b[34m%s\x1b[0m', `======================================= PORT:${PORT}`);
+})()
