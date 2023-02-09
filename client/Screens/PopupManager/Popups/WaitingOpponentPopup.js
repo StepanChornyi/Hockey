@@ -1,4 +1,4 @@
-import { Black, Graphics, DisplayObject, Tween, TextField } from 'black-engine';
+import { Black, Graphics, DisplayObject, Tween, TextField, Rectangle } from 'black-engine';
 import Button from '../../MainMenuScreen/Button';
 import BasePopup from './BasePopup';
 
@@ -53,6 +53,7 @@ export default class WaitingOpponentPopup extends BasePopup {
 
 const LW = 10;
 const RADIUS = 40;
+const SEGMENTS_COUNT = 2;
 
 class Spinner extends Graphics {
   constructor() {
@@ -61,15 +62,15 @@ class Spinner extends Graphics {
     this._rotateSpeed = 6;
 
     this.lineStyle(LW, 0xffffff)
-    this.beginPath();
-    this.arc(RADIUS + LW * 0.5, RADIUS + LW * 0.5, RADIUS, 0, Math.PI * 0.5);
-    this.stroke();
-    this.closePath();
 
-    this.beginPath();
-    this.arc(RADIUS + LW * 0.5, RADIUS + LW * 0.5, RADIUS, Math.PI, Math.PI * 1.5);
-    this.stroke();
-    this.closePath();
+    const angularSize = (Math.PI * 2) / (SEGMENTS_COUNT * 2);
+
+    for (let i = 0; i < SEGMENTS_COUNT; i++) {
+      this.beginPath();
+      this.arc(RADIUS + LW * 0.5, RADIUS + LW * 0.5, RADIUS, angularSize * (i * 2), angularSize * (i * 2 + 1));
+      this.stroke();
+      this.closePath();
+    }
 
     this.alignAnchor();
   }
@@ -79,6 +80,18 @@ class Spinner extends Graphics {
   }
 
   _getFixedBounds(outRect) {
-    return outRect.set(0, 0, RADIUS + LW, RADIUS + LW);
+    return outRect.set(0, 0, RADIUS*2 + LW, RADIUS*2 + LW);
+  }
+
+  onGetLocalBounds(outRect = new Rectangle()) {
+    return this._getFixedBounds(outRect);
+  }
+
+  get bounds() {
+    return this.getBounds();
+  }
+
+  getBounds(...args) {
+    return super.getBounds(args[0], false, args[2]);
   }
 }
