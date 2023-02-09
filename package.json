@@ -1,7 +1,7 @@
 {
-  "name": "black-template",
+  "name": "hockey",
   "version": "1.0.0",
-  "description": "Starting point for Black powered apps.",
+  "description": "Multiplayer game",
   "main": "js/main.js",
   "scripts": {
     "server": "nodemon --watch server server/Index.js",
@@ -10,16 +10,7 @@
     "build:dev": "webpack --config webpack.config.dev.js",
     "clean": "rimraf dist/*"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/MassiveHeights/Black-Template.git"
-  },
-  "author": "Massive Heights",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/MassiveHeights/Black-Template/issues"
-  },
-  "homepage": "https://blacksmith2d.io",
+  "author": "Stepan Chornyi",
   "devDependencies": {
     "@babel/core": "^7.11.6",
     "@babel/plugin-transform-runtime": "^7.11.5",
