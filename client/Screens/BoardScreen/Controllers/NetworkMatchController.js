@@ -259,7 +259,7 @@ export default class NetworkMatchController extends AbstractMatchController {
 
     board.setData(data);
 
-    board.setCenterColor(GameModel.isHost) ///for debug purposes
+    // board.setCenterColor(GameModel.isHost) ///for debug purposes
 
     if (boardSim.isPaused)
       return;

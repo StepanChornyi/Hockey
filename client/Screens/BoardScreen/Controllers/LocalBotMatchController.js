@@ -128,44 +128,48 @@ export default class LocalBotMatchController extends AbstractMatchController {
     if (boardSim.isPaused)
       return;
 
-    let sensitivity = this.sensitivity;
-    let resetVal = this.resetVal;
+    // let sensitivity = this.sensitivity;
+    // let resetVal = this.resetVal;
 
-    if (this.freeze > 0) {
+    // if (this.freeze > 0) {
 
-      const freezeRadius = PLAYER_RADIUS * 0.5;
+    //   const freezeRadius = PLAYER_RADIUS * 0.5;
 
-      const inputB = board.inputB;
-      const distB = PLAYER_B_START.distance(inputB);
-      const offset = inputB.clone()
-        .subtract(PLAYER_B_START)
-        .multiplyScalar(distB === 0 ? 0 : 1 / distB);
+    //   const inputB = board.inputB;
+    //   const distB = PLAYER_B_START.distance(inputB);
+    //   const offset = inputB.clone()
+    //     .subtract(PLAYER_B_START)
+    //     .multiplyScalar(distB === 0 ? 0 : 1 / distB);
 
-      offset.multiplyScalar(Math.min(freezeRadius, distB));
-      offset.add(PLAYER_B_START);
+    //   offset.multiplyScalar(Math.min(freezeRadius, distB));
+    //   offset.add(PLAYER_B_START);
 
-      lerpVec2(boardSim.playerBController, offset, 0.2);
+    //   lerpVec2(boardSim.playerBController, offset, 0.2);
 
-      sensitivity *= (1 - this.freeze);
-      resetVal *= (1 - this.freeze);
-    }
+    //   sensitivity *= (1 - this.freeze);
+    //   resetVal *= (1 - this.freeze);
+    // }
 
-    lerpVec2(boardSim.playerAController, board.inputA, sensitivity);
-    lerpVec2(boardSim.playerBController, board.inputB, sensitivity);
+    // lerpVec2(boardSim.playerAController, board.inputA, sensitivity);
+    // lerpVec2(boardSim.playerBController, board.inputB, sensitivity);
 
-    if (resetVal > 0) {
-      boardSim.playerBController.y = Math.min(Math.max(boardSim.playerBController.y, PLAYER_B_BOX.top), PLAYER_B_BOX.bottom)
+    // if (resetVal > 0) {
+    //   boardSim.playerBController.y = Math.min(Math.max(boardSim.playerBController.y, PLAYER_B_BOX.top), PLAYER_B_BOX.bottom)
 
-      const minDist = GATES_SIZE * 0.5 + BALL_RADIUS * 2 + PLAYER_RADIUS;
-      const dist = BOARD_CENTER.distance(boardSim.playerBController);
+    //   const minDist = GATES_SIZE * 0.5 + BALL_RADIUS * 2 + PLAYER_RADIUS;
+    //   const dist = BOARD_CENTER.distance(boardSim.playerBController);
 
-      if (dist < minDist) {
-        const normal = boardSim.playerBController.clone().subtract(BOARD_CENTER).multiplyScalar(1 / dist);
-        const desiredPos = BOARD_CENTER.clone().add(normal.multiplyScalar(minDist));
+    //   if (dist < minDist) {
+    //     const normal = boardSim.playerBController.clone().subtract(BOARD_CENTER).multiplyScalar(1 / dist);
+    //     const desiredPos = BOARD_CENTER.clone().add(normal.multiplyScalar(minDist));
 
-        lerpVec2(boardSim.playerBController, desiredPos, resetVal);
-      }
-    }
+    //     lerpVec2(boardSim.playerBController, desiredPos, resetVal);
+    //   }
+    // }
+
+    boardSim.playerAController.copyFrom(board.inputA) 
+    boardSim.playerBController.copyFrom(board.inputB) 
+
 
     boardSim.update();
   }
