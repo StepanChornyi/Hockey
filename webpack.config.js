@@ -8,26 +8,11 @@ const DEV_SERVER_PORT = 3000;
 
 module.exports = {
   devServer: {
-    inline: true,
     port: DEV_SERVER_PORT,
-    publicPath: '/',
+    devMiddleware: {
+      publicPath: '/'
+    },
     host: '0.0.0.0',
-    disableHostCheck: true,
-    setup(app) {
-      const bodyParser = require('body-parser');
-
-      app.use(bodyParser.json());
-
-      // app.get("/get/some-data", function (req, res) {
-      //   console.log(req);
-      //   res.send("GET res sent from webpack dev server")
-      // })
-
-      // app.post("/post/some-data", bodyParser.json(), function (req, res) {
-      //   console.log(req.body);
-      //   res.send("POST res sent from webpack dev server")
-      // })
-    }
   },
   resolve: {
     alias: {
