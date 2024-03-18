@@ -49,7 +49,7 @@ export default class BoardScreen extends AbstractScreen {
     // }, 1000);
 
     resultScene.on("continuePressed", () => {
-      this.once("hide", () => resultScene.hide())
+      resultScene.hide()
       this.post("openMainMenu")
     });
 

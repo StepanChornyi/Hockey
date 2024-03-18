@@ -60,14 +60,14 @@ export default class Game extends GameObject {
       this._popupManager.hide();
     })
 
-    this._popupManager.on("createSinglePlayerGame", () => {
+    // this._popupManager.on("createSinglePlayerGame", () => {
       this._popupManager.hide();
 
       this._boardScreen.processMessage(S_INIT_MATCH, { isLocalBotMatch: true });
       this._boardScreen.processMessage(S_START_MATCH);
 
       this._showScreen(this._boardScreen);
-    })
+    // })
 
     InputPopup.on("nickname", (_, nickname) => {
       Black.audio.play("click", "master", 0.5);
@@ -75,15 +75,18 @@ export default class Game extends GameObject {
     })
 
     this._boardScreen.on("openMainMenu", () => {
-      this._showScreen(this._mainMenuScreen);
+      this._popupManager.hide();
+
+      this._boardScreen.processMessage(S_INIT_MATCH, { isLocalBotMatch: true });
+      this._boardScreen.processMessage(S_START_MATCH);
     })
 
     this._mainMenuScreen.on("createGame", () => {
       this._popupManager.showPopup(PopupManager.CreateGamePopup);
     })
 
-    // this._showScreen(this._boardScreen);
-    this._showScreen(this._mainMenuScreen);
+    this._showScreen(this._boardScreen);
+    // this._showScreen(this._mainMenuScreen);
   }
 
   _emitMessage(msg, data = {}, screen = this._activeScreen) {

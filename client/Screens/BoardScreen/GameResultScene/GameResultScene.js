@@ -14,8 +14,8 @@ export default class GameResultScene extends BaseScene {
     this._resizeBounds = new Rectangle();
 
     const wlAnimContainer = this._wlAnimContainer = new DisplayObject();
-    const continueBtnGreen = this._continueBtnGreen = new GlowingButton("Continue", Button.WHITE_GREEN, 250, 80);
-    const continueBtnRed = this._continueBtnRed = new GlowingButton("Continue", Button.WHITE_RED, 250, 80);
+    const continueBtnGreen = this._continueBtnGreen = new GlowingButton("Replay", Button.WHITE_GREEN, 250, 80);
+    const continueBtnRed = this._continueBtnRed = new GlowingButton("Replay", Button.WHITE_RED, 250, 80);
 
     this._wlAnim = wlAnimContainer.addChild(new WinLoseAnimation());
 
@@ -76,6 +76,9 @@ export default class GameResultScene extends BaseScene {
     this.visible = false;
     this._wlAnim.hide();
     this._overlay.alpha = 0;
+
+    this._continueBtnGreen.alpha = 0;
+    this._continueBtnRed.alpha = 0;
   }
 
   _showContinueBtn(continueBtn, delay = 0) {
