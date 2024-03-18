@@ -1,15 +1,9 @@
 const { Server } = require("socket.io");
 const { DataManager } = require('./DataManager');
 const { ServerController } = require("./ServerController");
-const mongoose = require('mongoose');
 
 (async () => {
   const PORT = 8080;
-  const mongoCredentials = 'mongodb+srv://stepan:4fEK33egL8lcLo6x@hockey.wvoxfpu.mongodb.net/hockey?retryWrites=true&w=majority';
-
-  mongoose.set('strictQuery', true);
-
-  await mongoose.connect(mongoCredentials);
 
   const http = require('http').createServer().listen(PORT, '0.0.0.0');
 
